@@ -9,7 +9,7 @@ namespace collections {
  * @author etsai
  */
 template <class T>
-class Collections {
+class Collection {
 public:
 
     /**
