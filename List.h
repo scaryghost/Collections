@@ -28,7 +28,7 @@ public:
      * @param   index   Index to remove
      * @return  Element stored at the index
      */
-    virtual T remove(int index)= 0;
+    virtual T minus(int index)= 0;
 
     /**
      * Get the element stored at the index
