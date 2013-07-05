@@ -1,6 +1,7 @@
 #ifndef ETSAI_COLLECTIONS_LIST_H
 #define ETSAI_COLLECTIONS_LIST_H
 
+#include <memory>
 #include <stdexcept>
 
 namespace etsai {
@@ -8,6 +9,7 @@ namespace collections {
 
 using std::out_of_range;
 using std::invalid_argument;
+using std::shared_ptr;
 
 /**
  * Pure virtual class defining the properties of a List
@@ -53,7 +55,7 @@ public:
      * @throw out_of_range      If either start or end index is outside the range [0, list size - 1]
      * @throw invalid_argument  If endIndex < startIndex
      */
-    virtual List<T>* subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument)= 0;
+    virtual shared_ptr<List<T>> subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument)= 0;
 };
 
 }   //namespace collections

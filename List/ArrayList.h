@@ -18,17 +18,19 @@ namespace etsai {
 namespace collections {
 namespace list {
 
+using collections::List;
 using std::invalid_argument;
 using std::out_of_range;
-using std::unique_ptr;
+using std::shared_ptr;
 using std::stringstream;
+using std::unique_ptr;
 
 /**
  * Manages a standard array and implements the List interface
  * @author etsai
  */
 template <class T>
-class ArrayList : public collections::List<T> {
+class ArrayList : public List<T> {
 public:
     /**
      * Constructs an array with an initial capacity.  The array will be able hold the given number of elements but 
@@ -151,7 +153,7 @@ public:
         RANGE_CHECK(index)
         return elements.get()[index];
     }
-    virtual List<T>* subList(int startIndex, int endIndex) const throw(out_of_range) {
+    virtual shared_ptr<List<T>> subList(int startIndex, int endIndex) const throw(out_of_range) {
         if (startIndex < 0 || startIndex >= listSize || endIndex < 0 || endIndex >= listSize) {
             stringstream msg;
             msg << "Indices (" << startIndex << ", " << endIndex << ") lay outside the range [0, " << listSize - 1 << "]";
@@ -165,7 +167,7 @@ public:
         ArrayList<T>* newList= new ArrayList<T>(endIndex - startIndex + 1);
         memcpy(newList->elements.get(), elements.get() + startIndex, endIndex);
         newList->listSize= newList->listCapacity;
-        return newList;
+        return shared_ptr<List<T>>(newList);
     }
 private:
     template <class U>
