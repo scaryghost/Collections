@@ -1,6 +1,8 @@
 #ifndef ETSAI_COLLECTIONS_COLLECTION_H
 #define ETSAI_COLLECTIONS_COLLECTION_H
 
+#include <functional>
+
 namespace etsai {
 namespace collections {
 
@@ -11,7 +13,6 @@ namespace collections {
 template <class T>
 class Collection {
 public:
-
     /**
      * Get the number of elements in the collection
      * @return  Number of elements
@@ -33,7 +34,16 @@ public:
      * @return  True if element is in collection
      */
     virtual bool contains(const T& elem) const= 0;
-
+    /**
+     * Applies the lambda to each element in the collection.  This version does not allow you to modify the elements.
+     * @param   lambda      Lambda function to evaluate each element with
+     */
+    virtual void each(const std::function<void (const T&)>& lambda) const= 0;
+    /**
+     * Applies the lambda to each element in the collection.  This version allows you to modify the elements.
+     * @param   lambda      Lambda function to evaluate each element with
+     */
+    virtual void each(const std::function<void (T&)>& lambda)= 0;
     /**
      * Removes the first occurance desired element from the collection.  The function returns true if the collection 
      * was changed from the call
@@ -55,6 +65,7 @@ public:
      * not the number of elements stored.  If newSize < current size, data may be lost.
      */
     virtual void resize(int newSize)= 0;
+
 };  //class Collections
 
 }   //namespace collections

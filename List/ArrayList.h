@@ -38,7 +38,7 @@ public:
     virtual bool contains(const T& elem) const {
         bool found= false;
         std::function<void (int)> forAll= [this, &forAll, &found, &elem](int index) -> void {
-            if (index > listSize || found) {
+            if (index >= listSize || found) {
                 return;
             }
             found= elements.get()[index] == elem;
@@ -47,11 +47,31 @@ public:
         forAll(0);
         return found;
     }
+    virtual void each(const std::function<void (const T&)>& lambda) const {
+        std::function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
+            if (index >= listSize) {
+                return;
+            }
+            lambda(elements.get()[index]);
+            forAll(index + 1);
+        };
+        forAll(0);
+    }
+    virtual void each(const std::function<void (T&)>& lambda) {
+        std::function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
+            if (index >= listSize) {
+                return;
+            }
+            lambda(elements.get()[index]);
+            forAll(index + 1);
+        };
+        forAll(0);
+    }
 
     virtual bool remove(const T& elem) {
         int elemIndex= -1;
         std::function<void (int)> forAll= [this, &forAll, &elemIndex, &elem](int index) -> void {
-            if (index > listSize) {
+            if (index >= listSize) {
                 return;
             }
             elemIndex= elements.get()[index] == elem;
