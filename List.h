@@ -1,6 +1,8 @@
 #ifndef ETSAI_COLLECTIONS_LIST_H
 #define ETSAI_COLLECTIONS_LIST_H
 
+#include "Collection.h"
+
 #include <memory>
 #include <stdexcept>
 
@@ -18,6 +20,7 @@ using std::shared_ptr;
 template <class T>
 class List : public Collection<T> {
 public:
+    virtual void add(const T& elem)= 0;
     /**
      * Insert an element at the specific position.  If the index is greater than the list size or capacity, 
      * more space should be allocated to accommodate the index.

@@ -73,7 +73,7 @@ private:
 
     int listCapacity, listSize;
     unique_ptr<T, ListDeleter<T> > elements;
-    unique_ptr<int> defaultValue;
+    unique_ptr<T> defaultValue;
 };
 
 template <class T>
@@ -83,7 +83,7 @@ ArrayList<T>::ArrayList(int initialCapacity) : listCapacity(initialCapacity), li
 
 template <class T>
 ArrayList<T>::ArrayList(int initialCapacity, const T& defaultValue) : ArrayList(initialCapacity) {
-    defaultValue.reset(new T(defaultValue));
+    this->defaultValue.reset(new T(defaultValue));
 }
 
 template <class T>
