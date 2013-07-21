@@ -47,6 +47,7 @@ public:
      */
     ArrayList(int initialCapacity, const T& defaultValue);
 
+    virtual bool equals(const Collection<T>* collection) const;
     virtual int size() const;
     virtual int capacity() const;
     virtual bool isEmpty() const;
@@ -84,6 +85,21 @@ ArrayList<T>::ArrayList(int initialCapacity) : listCapacity(initialCapacity), li
 template <class T>
 ArrayList<T>::ArrayList(int initialCapacity, const T& defaultValue) : ArrayList(initialCapacity) {
     this->defaultValue.reset(new T(defaultValue));
+}
+
+template <class T>
+bool ArrayList<T>::equals(const Collection<T>* collection) const {
+    int size= collection->size(), index= 0;
+    bool equal= true;
+
+    if (size != listSize) {
+        return false;
+    }
+    collection->each([&equal, &index, this](const T& elem) -> void {
+        equal= equal && (elements.get()[index] == elem);
+        index++;
+    });
+    return equal;
 }
 
 template <class T>

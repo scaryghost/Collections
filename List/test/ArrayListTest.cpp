@@ -26,5 +26,10 @@ int main(int argc, char **argv) {
     list->each([](int& i) -> void { cout << i << " "; });
     cout << endl;
     cout << "Size: " << list->size() << endl;
+
+    List<int>* list2= new ArrayList<int>(2, 0);
+    list2->add(0);
+    list2->add(2);
+    cout << "Equals? " << list2->equals(list) << endl;
     return 0;
 }

@@ -14,6 +14,13 @@ template <class T>
 class Collection {
 public:
     /**
+     * Compares the contents of the two collections.  Different collection types may define equality 
+     * differently.  Double check the equality condition of the collection type you are using 
+     * @param   collection      The collection to compare against
+     8 @returns True if the two collections are equal, false otherwise
+     */
+    virtual bool equals(const Collection<T>* collection) const= 0;
+    /**
      * Get the number of elements in the collection
      * @return  Number of elements
      */
