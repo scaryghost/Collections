@@ -2,9 +2,13 @@
 #define ETSAI_COLLECTIONS_COLLECTION_H
 
 #include <functional>
+#include <string>
 
 namespace etsai {
 namespace collections {
+
+using std::function;
+using std::string;
 
 /**
  * Pure virtual class defining the properties of a collection
@@ -42,15 +46,20 @@ public:
      */
     virtual bool contains(const T& elem) const= 0;
     /**
+     * Creates a string representation of the collection
+     * @return  String representation of the collection
+     */
+    virtual string toString() const= 0;
+    /**
      * Applies the lambda to each element in the collection.  This version does not allow you to modify the elements.
      * @param   lambda      Lambda function to evaluate each element with
      */
-    virtual void each(const std::function<void (const T&)>& lambda) const= 0;
+    virtual void each(const function<void (const T&)>& lambda) const= 0;
     /**
      * Applies the lambda to each element in the collection.  This version allows you to modify the elements.
      * @param   lambda      Lambda function to evaluate each element with
      */
-    virtual void each(const std::function<void (T&)>& lambda)= 0;
+    virtual void each(const function<void (T&)>& lambda)= 0;
     /**
      * Removes the first occurance desired element from the collection.  The function returns true if the collection 
      * was changed from the call

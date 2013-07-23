@@ -2,6 +2,7 @@
 #define ETSAI_COLLECTIONS_LIST_ARRAYLIST_H
 
 #include <functional>
+#include <initializer_list>
 #include <memory>
 #include <sstream>
 #include <string.h>
@@ -19,6 +20,8 @@ namespace collections {
 namespace list {
 
 using collections::List;
+using std::function;
+using std::initializer_list;
 using std::invalid_argument;
 using std::out_of_range;
 using std::shared_ptr;
@@ -33,13 +36,23 @@ template <class T>
 class ArrayList : public List<T> {
 public:
     /**
-     * Constructs an array with an initial capacity.  The array will be able hold the given number of elements but 
+     * Constructs an empty ArrayList with 0 size and capacity
+     */
+    ArrayList();
+    /**
+     * Constructs an ArrayList containings the elements in the initialier list.  This constructor provides a quick way to 
+     * create an ArrayList with the elements already known
+     * @param   elements    Initial values for the list
+     */
+    ArrayList(initializer_list<T> elements);
+    /**
+     * Constructs an ArrayList with an initial capacity.  The array will be able hold the given number of elements but 
      * will have an effective size of 0 until elements are added.
-     * @param   initialCapacity     Initial capacity of the list
+     * @param   initialCapacity     Initial capacity of the list that must be a positive number
      */
     ArrayList(int initialCapacity);
     /**
-     * Constructs an array with an initial capacity, filled with a default value.  The default value will be used 
+     * Constructs an ArrayList with an initial capacity, filled with a default value.  The default value will be used 
      * whenever the list expandes.   The array will be able hold the given number of elements but will have an 
      * effective size of 0 until elements are added
      * @param   initialCapacity     Initial capacity of the list
@@ -52,8 +65,9 @@ public:
     virtual int capacity() const;
     virtual bool isEmpty() const;
     virtual bool contains(const T& elem) const;
-    virtual void each(const std::function<void (const T&)>& lambda) const;
-    virtual void each(const std::function<void (T&)>& lambda);
+    virtual string toString() const;
+    virtual void each(const function<void (const T&)>& lambda) const;
+    virtual void each(const function<void (T&)>& lambda);
 
     virtual bool remove(const T& elem); 
     virtual void add(const T& elem);
@@ -78,8 +92,25 @@ private:
 };
 
 template <class T>
+ArrayList<T>::ArrayList() : ArrayList(0) {
+}
+
+template <class T>
+ArrayList<T>::ArrayList(initializer_list<T> elements) : ArrayList(elements.size()) {
+    int offset(0);
+
+    for(auto &elem: elements) {
+        this->elements.get()[offset]= elem;
+        offset++;
+    }
+    listSize= listCapacity;
+}
+
+template <class T>
 ArrayList<T>::ArrayList(int initialCapacity) : listCapacity(initialCapacity), listSize(0), elements(NULL, ListDeleter<T>()) {
-    elements.reset(new T[listCapacity]);
+    if (initialCapacity > 0) {
+        elements.reset(new T[listCapacity]);
+    }
 }
 
 template <class T>
@@ -120,7 +151,7 @@ bool ArrayList<T>::isEmpty() const {
 template <class T>
 bool ArrayList<T>::contains(const T& elem) const {
     bool found= false;
-    std::function<void (int)> forAll= [this, &forAll, &found, &elem](int index) -> void {
+    function<void (int)> forAll= [this, &forAll, &found, &elem](int index) -> void {
         if (index >= listSize || found) {
             return;
         }
@@ -132,8 +163,25 @@ bool ArrayList<T>::contains(const T& elem) const {
 }
 
 template <class T>
-void ArrayList<T>::each(const std::function<void (const T&)>& lambda) const {
-    std::function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
+string ArrayList<T>::toString() const {
+    stringstream str;
+    bool first(true);
+
+    str << "[";
+    each([&str, &first](const T& elem) -> void {
+        if (!first) {
+            str << ", ";
+        }
+        str << elem;
+        first= false;
+    });
+    str << "]";
+    return str.str(); 
+}
+
+template <class T>
+void ArrayList<T>::each(const function<void (const T&)>& lambda) const {
+    function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
         if (index >= listSize) {
             return;
         }
@@ -144,8 +192,8 @@ void ArrayList<T>::each(const std::function<void (const T&)>& lambda) const {
 }
 
 template <class T>
-void ArrayList<T>::each(const std::function<void (T&)>& lambda) {
-    std::function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
+void ArrayList<T>::each(const function<void (T&)>& lambda) {
+    function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
         if (index >= listSize) {
             return;
         }
@@ -158,7 +206,7 @@ void ArrayList<T>::each(const std::function<void (T&)>& lambda) {
 template <class T>
 bool ArrayList<T>::remove(const T& elem) {
     int elemIndex= -1;
-    std::function<void (int)> forAll= [this, &forAll, &elemIndex, &elem](int index) -> void {
+    function<void (int)> forAll= [this, &forAll, &elemIndex, &elem](int index) -> void {
         if (index >= listSize) {
             return;
         }
@@ -185,16 +233,20 @@ void ArrayList<T>::clear() {
 
 template <class T>
 void ArrayList<T>::resize(int newSize) {
+    if (newSize > 0) {
         int offset= newSize - listCapacity;
 
         T *newList= new T[newSize];
-        memcpy(newList, elements.get(), newSize);
+        if (listCapacity > 0) {
+            memcpy(newList, elements.get(), newSize);
+        }
         if (defaultValue != NULL) {
             memset(newList + listCapacity, *defaultValue, offset);
         }
         elements.reset(newList);
         listCapacity= newSize;
     }
+}
 
 template <class T>
 void ArrayList<T>::add(int index, const T& elem) {

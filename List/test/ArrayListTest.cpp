@@ -12,24 +12,17 @@ using std::unique_ptr;
 
 int main(int argc, char **argv) {
     int count= 0;
-    List<int>* list= new ArrayList<int>(10, 0);
+    List<int>* list= new ArrayList<int>({0, 1, 2});
 
 
-    list->add(0);
-    list->add(1);
-    list->add(2);
-    list->each([](int& i) -> void { cout << i << " "; });
-    cout << endl;
+    cout << list->toString() << endl;
     cout << "empty? " << list->isEmpty() << endl;
 
     list->minus(1);
-    list->each([](int& i) -> void { cout << i << " "; });
-    cout << endl;
+    cout << list->toString() << endl;
     cout << "Size: " << list->size() << endl;
 
-    List<int>* list2= new ArrayList<int>(2, 0);
-    list2->add(0);
-    list2->add(2);
+    List<int>* list2= new ArrayList<int>({0, 2});
     cout << "Equals? " << list2->equals(list) << endl;
     return 0;
 }
