@@ -6,6 +6,7 @@
 #include <memory>
 #include <sstream>
 #include <string.h>
+
 #include "List.h"
 
 #define RANGE_CHECK(index) \
@@ -60,6 +61,7 @@ public:
      */
     ArrayList(int initialCapacity, const T& defaultValue);
 
+    virtual bool equals(initializer_list<T> collection) const;
     virtual bool equals(const Collection<T>* collection) const;
     virtual int size() const;
     virtual int capacity() const;
@@ -116,6 +118,18 @@ ArrayList<T>::ArrayList(int initialCapacity) : listCapacity(initialCapacity), li
 template <class T>
 ArrayList<T>::ArrayList(int initialCapacity, const T& defaultValue) : ArrayList(initialCapacity) {
     this->defaultValue.reset(new T(defaultValue));
+}
+
+template <class T>
+bool ArrayList<T>::equals(initializer_list<T> collection) const {
+    int index= 0;
+    bool equal= true;
+
+    for(auto elem: collection) {
+        equal= equal && (elements.get()[index] == elem);
+        index++;
+    }
+    return equal;
 }
 
 template <class T>

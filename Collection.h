@@ -2,12 +2,14 @@
 #define ETSAI_COLLECTIONS_COLLECTION_H
 
 #include <functional>
+#include <initializer_list>
 #include <string>
 
 namespace etsai {
 namespace collections {
 
 using std::function;
+using std::initializer_list;
 using std::string;
 
 /**
@@ -17,6 +19,15 @@ using std::string;
 template <class T>
 class Collection {
 public:
+    /**
+     * Compares the contents of the intializer list with the collection.  This version is for creating  
+     * a collection on the fly to check the contents of the object.  Different collection types 
+     * may define equality differently.  Double check the equality condition of the collection type 
+     * you are using.
+     * @param   collection      The collection to compare against
+     8 @returns True if the two collections are equal, false otherwise
+     */
+    virtual bool equals(initializer_list<T> collection) const= 0;
     /**
      * Compares the contents of the two collections.  Different collection types may define equality 
      * differently.  Double check the equality condition of the collection type you are using 
