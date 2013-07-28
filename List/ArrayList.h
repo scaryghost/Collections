@@ -41,11 +41,18 @@ public:
      */
     ArrayList();
     /**
-     * Constructs an ArrayList containings the elements in the initialier list.  This constructor provides a quick way to 
+     * Constructs an ArrayList containing the elements in the initialier list.  This constructor provides a quick way to 
      * create an ArrayList with the elements already known
      * @param   elements    Initial values for the list
      */
     ArrayList(initializer_list<T> elements);
+    /**
+     * Constructs an ArrayList containing the elements in the initialier list and a reserved default value for list expansions.  
+     * This constructor provides a quick way to create an ArrayList with the elements already known
+     * @param   elements        Initial values for the list
+     * @param   defaultValue    Default value to use for list expansions
+     */
+    ArrayList(initializer_list<T> elements, const T& defaultValue);
     /**
      * Constructs an ArrayList with an initial capacity.  The array will be able hold the given number of elements but 
      * will have an effective size of 0 until elements are added.
@@ -53,15 +60,26 @@ public:
      */
     ArrayList(int initialCapacity);
     /**
-     * Constructs an ArrayList with an initial capacity, filled with a default value.  The default value will be used 
+     * Constructs an ArrayList with an initial size, filled with a default value.  The default value will be used 
      * whenever the list expandes.   The array will be able hold the given number of elements but will have an 
      * effective size of 0 until elements are added
-     * @param   initialCapacity     Initial capacity of the list
+     * @param   initialSize         Initial size of the list
      * @param   defaultValue        Default value to fill the list with
      */
-    ArrayList(int initialCapacity, const T& defaultValue);
+    ArrayList(int initialSize, const T& defaultValue);
 
+    /**
+     * Checks if both collection shave the same elements in the same order.  This version provides a way to quickly 
+     * check the contents of a list
+     * @param   collection      Collection to check again
+     * @return  True if both collection shave the same elements and ordering
+     */
     virtual bool equals(initializer_list<T> collection) const;
+    /**
+     * Checks if both collection shave the same elements in the same order
+     * @param   collection      Collection to check again
+     * @return  True if both collection shave the same elements and ordering
+     */
     virtual bool equals(const Collection<T>* collection) const;
     virtual int size() const;
     virtual int capacity() const;
@@ -109,6 +127,11 @@ ArrayList<T>::ArrayList(initializer_list<T> elements) : ArrayList(elements.size(
 }
 
 template <class T>
+ArrayList<T>::ArrayList(initializer_list<T> elements, const T& defaultValue) : ArrayList(elements) {
+    this->defaultValue.reset(new T(defaultValue));
+}
+
+template <class T>
 ArrayList<T>::ArrayList(int initialCapacity) : listCapacity(initialCapacity), listSize(0), elements(NULL, ListDeleter<T>()) {
     if (initialCapacity > 0) {
         elements.reset(new T[listCapacity]);
@@ -116,8 +139,11 @@ ArrayList<T>::ArrayList(int initialCapacity) : listCapacity(initialCapacity), li
 }
 
 template <class T>
-ArrayList<T>::ArrayList(int initialCapacity, const T& defaultValue) : ArrayList(initialCapacity) {
+ArrayList<T>::ArrayList(int initialSize, const T& defaultValue) : ArrayList(initialSize) {
     this->defaultValue.reset(new T(defaultValue));
+    for(int i= 0; i < initialSize; i++) {
+        this->elements.get()[i]= defaultValue;
+    }
 }
 
 template <class T>
@@ -125,6 +151,9 @@ bool ArrayList<T>::equals(initializer_list<T> collection) const {
     int index= 0;
     bool equal= true;
 
+    if (collection.size() != listSize) {
+        return false;
+    }
     for(auto elem: collection) {
         equal= equal && (elements.get()[index] == elem);
         index++;
@@ -134,10 +163,10 @@ bool ArrayList<T>::equals(initializer_list<T> collection) const {
 
 template <class T>
 bool ArrayList<T>::equals(const Collection<T>* collection) const {
-    int size= collection->size(), index= 0;
+    int index= 0;
     bool equal= true;
 
-    if (size != listSize) {
+    if (collection->size() != listSize) {
         return false;
     }
     collection->each([&equal, &index, this](const T& elem) -> void {
@@ -224,7 +253,10 @@ bool ArrayList<T>::remove(const T& elem) {
         if (index >= listSize) {
             return;
         }
-        elemIndex= elements.get()[index] == elem;
+        if (elements.get()[index] == elem) {
+            elemIndex= index;
+            return;
+        }
         forAll(index + 1);
     };
     forAll(0);
@@ -247,15 +279,21 @@ void ArrayList<T>::clear() {
 
 template <class T>
 void ArrayList<T>::resize(int newSize) {
-    if (newSize > 0) {
+    if (newSize > 0 && newSize != listCapacity) {
         int offset= newSize - listCapacity;
 
         T *newList= new T[newSize];
         if (listCapacity > 0) {
-            memcpy(newList, elements.get(), newSize);
+            memcpy(newList, elements.get(), newSize * sizeof(T));
         }
-        if (defaultValue != NULL) {
-            memset(newList + listCapacity, *defaultValue, offset);
+        if (offset > 0) {
+            if (defaultValue != NULL) {
+                for(int i= 0; i < offset; i++) {
+                    newList[listCapacity + i]= *defaultValue;
+                }
+            }
+        } else {
+            listSize= newSize;
         }
         elements.reset(newList);
         listCapacity= newSize;
@@ -264,13 +302,15 @@ void ArrayList<T>::resize(int newSize) {
 
 template <class T>
 void ArrayList<T>::add(int index, const T& elem) {
-    if (index > listCapacity) {
-        resize(listCapacity * 1.5);
+    if (elements == NULL) {
+        resize(8);
+    } else if (index > listCapacity) {
+        resize((index + 1) * 1.5);
     }
     if (index > listSize) {
-        listSize= index;
+        listSize= index + 1;
     } else {
-        memmove(elements.get() + index + 1, elements.get() + index, listSize - index);
+        memmove(elements.get() + index + 1, elements.get() + index, (listSize - index) * sizeof(T));
         listSize++;
     }
     elements.get()[index]= elem;
@@ -286,8 +326,8 @@ template <class T>
 T ArrayList<T>::minus(int index) throw(out_of_range) {
     RANGE_CHECK(index)
     T elem= elements.get()[index];
-    memmove(elements.get() + index, elements.get() + index + 1, listSize - index);
     listSize--;
+    memmove(elements.get() + index, elements.get() + index + 1, (listSize - index) * sizeof(T));
     return elem;
 }
 
@@ -310,7 +350,7 @@ shared_ptr<List<T>> ArrayList<T>::subList(int startIndex, int endIndex) const th
     }
         
     ArrayList<T>* newList= new ArrayList<T>(endIndex - startIndex + 1);
-    memcpy(newList->elements.get(), elements.get() + startIndex, endIndex);
+    memcpy(newList->elements.get(), elements.get() + startIndex, (endIndex - startIndex + 1) * sizeof(T));
     newList->listSize= newList->listCapacity;
     return shared_ptr<List<T>>(newList);
 }

@@ -88,8 +88,9 @@ public:
      */
     virtual void clear()= 0;
     /**
-     * Changes the capacity of the collection to the new size.  This function only alters the capacity of the collection, 
-     * not the number of elements stored.  If newSize < current size, data may be lost.
+     * Changes the capacity of the collection to the new size.  If new size > current size, then only the capacity will 
+     * be modified.  However, if new size < current size, then both capacity and size will shrink and be equal, and data 
+     * will be lost
      */
     virtual void resize(int newSize)= 0;
 
