@@ -1,6 +1,8 @@
+
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 #include "List.h"
@@ -11,7 +13,9 @@ using etsai::collections::list::ArrayList;
 using std::cout;
 using std::endl;
 using std::function;
+using std::invalid_argument;
 using std::ostream;
+using std::out_of_range;
 using std::shared_ptr;
 using std::vector;
 
@@ -187,6 +191,48 @@ int main(int argc, char **argv) {
         cout << sublist->toString() << endl;
     });
     unitTests.push_back([&pass, &fail, &index]() -> void {
+        List<Integer> *l= new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        index++;
+        cout << "Test " << index << ": Sublist invalid 1 = ";
+
+        bool exception= false;
+        try {
+            auto sublist= l->subList(-1, 7);
+        } catch (out_of_range &ex) {
+            exception= true;
+            cout << "Exception! " << ex.what() << endl;
+        }
+        RESULT_HANDLER(exception);
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        List<Integer> *l= new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        index++;
+        cout << "Test " << index << ": Sublist invalid 2 = ";
+
+        bool exception= false;
+        try {
+            auto sublist= l->subList(3, 10);
+        } catch (out_of_range &ex) {
+            exception= true;
+            cout << "Exception! " << ex.what() << endl;
+        }
+        RESULT_HANDLER(exception);
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        List<Integer> *l= new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        index++;
+        cout << "Test " << index << ": Sublist invalid 3 = ";
+
+        bool exception= false;
+        try {
+            auto sublist= l->subList(7, 3);
+        } catch (invalid_argument &ex) {
+            exception= true;
+            cout << "Exception! " << ex.what() << endl;
+        }
+        RESULT_HANDLER(exception);
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
         List<Integer> *l= new ArrayList<Integer>({0, 1, 2}, 0);
         index++;
         cout << "Test " << index << ": Expand list 1= ";
@@ -218,6 +264,44 @@ int main(int argc, char **argv) {
         l->resize(5);
         RESULT_HANDLER(l->equals({0, 1, 2, 3, 4}) && l->capacity() == l->size());
         cout << l->capacity() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        List<Integer> *l= new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        index++;
+        cout << "Test " << index << ": Set 1= ";
+        l->set(5, 10);
+        RESULT_HANDLER(l->equals({0, 1, 2, 3, 4, 10, 6, 7, 8, 9}) && l->size() == 10);
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        List<Integer> *l= new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        index++;
+        cout << "Test " << index << ": Set 2= ";
+        bool exception= false;
+
+        try {
+            l->set(10, 10);
+        } catch (out_of_range& ex) {
+            exception= true;
+            cout << "Exception! " << ex.what() << endl;
+        }
+        RESULT_HANDLER(exception);
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        List<Integer> *l= new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        index++;
+        cout << "Test " << index << ": Set 3= ";
+        bool exception= false;
+
+        try {
+            l->set(-1, 10);
+        } catch (out_of_range& ex) {
+            exception= true;
+            cout << "Exception! " << ex.what() << endl;
+        }
+        RESULT_HANDLER(exception);
+        cout << l->toString() << endl;
     });
 
     for(UnitTest& test: unitTests) {

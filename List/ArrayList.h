@@ -97,7 +97,7 @@ public:
     virtual void set(int index, const T& elem) throw(out_of_range);
     virtual T minus(int index) throw(out_of_range);
     virtual T get(int index) const throw(out_of_range);
-    virtual shared_ptr<List<T>> subList(int startIndex, int endIndex) const throw(out_of_range);
+    virtual shared_ptr<List<T>> subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument);
 private:
     template <class U>
     struct ListDeleter {
@@ -348,7 +348,7 @@ T ArrayList<T>::get(int index) const throw(out_of_range) {
 }
 
 template <class T>
-shared_ptr<List<T>> ArrayList<T>::subList(int startIndex, int endIndex) const throw(out_of_range) {
+shared_ptr<List<T>> ArrayList<T>::subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument) {
     if (startIndex < 0 || startIndex >= listSize || endIndex < 0 || endIndex >= listSize) {
         stringstream msg;
         msg << "Indices (" << startIndex << ", " << endIndex << ") lay outside the range [0, " << listSize - 1 << "]";
