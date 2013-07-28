@@ -284,7 +284,10 @@ void ArrayList<T>::resize(int newSize) {
 
         T *newList= new T[newSize];
         if (listCapacity > 0) {
-            memcpy(newList, elements.get(), newSize * sizeof(T));
+            int maxLen= (offset < 0 ? newSize : listCapacity);
+            for(int i= 0; i < maxLen; i++) {
+                newList[i]= elements.get()[i];
+            }
         }
         if (offset > 0) {
             if (defaultValue != NULL) {
@@ -310,7 +313,12 @@ void ArrayList<T>::add(int index, const T& elem) {
     if (index > listSize) {
         listSize= index + 1;
     } else {
-        memmove(elements.get() + index + 1, elements.get() + index, (listSize - index) * sizeof(T));
+        if (listSize + 1 > listCapacity) {
+            resize(listCapacity * 1.5);
+        }
+        for(int i= listSize + 1; i > index; i--) {
+            elements.get()[i]= elements.get()[i - 1];
+        }
         listSize++;
     }
     elements.get()[index]= elem;
@@ -327,7 +335,9 @@ T ArrayList<T>::minus(int index) throw(out_of_range) {
     RANGE_CHECK(index)
     T elem= elements.get()[index];
     listSize--;
-    memmove(elements.get() + index, elements.get() + index + 1, (listSize - index) * sizeof(T));
+    for(int i= index; i < listSize; i++) {
+        elements.get()[i]= elements.get()[i + 1];
+    }
     return elem;
 }
 
@@ -350,7 +360,9 @@ shared_ptr<List<T>> ArrayList<T>::subList(int startIndex, int endIndex) const th
     }
         
     ArrayList<T>* newList= new ArrayList<T>(endIndex - startIndex + 1);
-    memcpy(newList->elements.get(), elements.get() + startIndex, (endIndex - startIndex + 1) * sizeof(T));
+    for(int i= 0; i < (endIndex - startIndex + 1); i++) {
+        newList->elements.get()[i]= elements.get()[startIndex + i];
+    }
     newList->listSize= newList->listCapacity;
     return shared_ptr<List<T>>(newList);
 }
