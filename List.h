@@ -20,6 +20,10 @@ using std::shared_ptr;
 template <class T>
 class List : public Collection<T> {
 public:
+    /**
+     * Pure virtual destructor
+     */
+    virtual ~List()= 0;
     virtual void add(const T& elem)= 0;
     /**
      * Insert an element at the specific position.  If the index is greater than the list size or capacity, 
@@ -60,6 +64,10 @@ public:
      */
     virtual shared_ptr<List<T>> subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument)= 0;
 };
+
+template <class T>
+List<T>::~List() {
+}
 
 }   //namespace collections
 }   //namespace etsai

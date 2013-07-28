@@ -20,6 +20,10 @@ template <class T>
 class Collection {
 public:
     /**
+     * Pure virtual destructor
+     */
+    virtual ~Collection()= 0;
+    /**
      * Compares the contents of the intializer list with the collection.  This version is for creating  
      * a collection on the fly to check the contents of the object.  Different collection types 
      * may define equality differently.  Double check the equality condition of the collection type 
@@ -95,6 +99,10 @@ public:
     virtual void resize(int newSize)= 0;
 
 };  //class Collections
+
+template <class T>
+Collection<T>::~Collection() {
+}
 
 }   //namespace collections
 }   //namespace etsai

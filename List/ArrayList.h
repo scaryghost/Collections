@@ -1,6 +1,7 @@
 #ifndef ETSAI_COLLECTIONS_LIST_ARRAYLIST_H
 #define ETSAI_COLLECTIONS_LIST_ARRAYLIST_H
 
+#include <iostream>
 #include <functional>
 #include <initializer_list>
 #include <memory>
@@ -20,6 +21,8 @@ namespace etsai {
 namespace collections {
 namespace list {
 
+using std::cout;
+using std::endl;
 using collections::List;
 using std::function;
 using std::initializer_list;
@@ -67,6 +70,10 @@ public:
      * @param   defaultValue        Default value to fill the list with
      */
     ArrayList(int initialSize, const T& defaultValue);
+    /**
+     * Class destructor to free up the allocated memory for the list
+     */
+    ~ArrayList();
 
     /**
      * Checks if both collection shave the same elements in the same order.  This version provides a way to quickly 
@@ -102,6 +109,7 @@ private:
     template <class U>
     struct ListDeleter {
         void operator()(U* p) {
+            cout << "I am deleting your list!" << endl;
             delete [] p;
         }
     };
@@ -144,6 +152,12 @@ ArrayList<T>::ArrayList(int initialSize, const T& defaultValue) : ArrayList(init
     for(int i= 0; i < initialSize; i++) {
         this->elements.get()[i]= defaultValue;
     }
+}
+
+template <class T>
+ArrayList<T>::~ArrayList() {
+    elements.reset(NULL);
+    defaultValue.reset(NULL);
 }
 
 template <class T>
