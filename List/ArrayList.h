@@ -332,10 +332,15 @@ template <class T>
 void ArrayList<T>::add(int index, const T& elem) {
     if (elements == NULL) {
         resize(8);
-    } else if (index > listCapacity) {
+    } else if (index >= listCapacity) {
         resize((index + 1) * 1.5);
     }
     if (index > listSize) {
+        if (defaultValue != NULL) {
+            for(int i= listSize; i < index; i++) {
+                elements.get()[i]= *defaultValue;
+            }
+        }
         listSize= index + 1;
     } else {
         if (listSize + 1 > listCapacity) {

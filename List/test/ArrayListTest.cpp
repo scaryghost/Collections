@@ -321,6 +321,32 @@ int main(int argc, char **argv) {
         RESULT_HANDLER(l->equals(copy) && l->size() == copy->size() && l->capacity() == copy->capacity());
         cout << "Size: " << copy->size() << endl;
     });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, -1));
+        index++;
+        cout << "Test " << index << ": Clear= ";
+        l->clear();
+        RESULT_HANDLER(l->isEmpty());
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, -1));
+        index++;
+        cout << "Test " << index << ": Clear then Add 1= ";
+        l->clear();
+        l->add(10, 1);
+        RESULT_HANDLER(l->equals({-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1}));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, -1));
+        index++;
+        cout << "Test " << index << ": Clear then Add 2= ";
+        l->clear();
+        l->add(5, 1);
+        RESULT_HANDLER(l->equals({-1, -1, -1, -1, -1, 1}));
+        cout << l->toString() << endl;
+    });
 
     for(UnitTest& test: unitTests) {
         test();
