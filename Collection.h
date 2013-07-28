@@ -24,6 +24,11 @@ public:
      */
     virtual ~Collection()= 0;
     /**
+     * Creates a deep copy of the collection
+     * @return  Copy of the collection
+     */
+    virtual Collection* clone() const= 0;
+    /**
      * Compares the contents of the intializer list with the collection.  This version is for creating  
      * a collection on the fly to check the contents of the object.  Different collection types 
      * may define equality differently.  Double check the equality condition of the collection type 

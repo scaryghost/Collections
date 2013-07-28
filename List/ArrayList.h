@@ -1,7 +1,6 @@
 #ifndef ETSAI_COLLECTIONS_LIST_ARRAYLIST_H
 #define ETSAI_COLLECTIONS_LIST_ARRAYLIST_H
 
-#include <iostream>
 #include <functional>
 #include <initializer_list>
 #include <memory>
@@ -21,8 +20,6 @@ namespace etsai {
 namespace collections {
 namespace list {
 
-using std::cout;
-using std::endl;
 using collections::List;
 using std::function;
 using std::initializer_list;
@@ -75,6 +72,7 @@ public:
      */
     ~ArrayList();
 
+    virtual ArrayList* clone() const;
     /**
      * Checks if both collection shave the same elements in the same order.  This version provides a way to quickly 
      * check the contents of a list
@@ -109,7 +107,6 @@ private:
     template <class U>
     struct ListDeleter {
         void operator()(U* p) {
-            cout << "I am deleting your list!" << endl;
             delete [] p;
         }
     };
@@ -158,6 +155,20 @@ template <class T>
 ArrayList<T>::~ArrayList() {
     elements.reset(NULL);
     defaultValue.reset(NULL);
+}
+
+template <class T>
+ArrayList<T>* ArrayList<T>::clone() const {
+    ArrayList<T> *copy= new ArrayList<T>(listCapacity);
+    for(int i= 0; i < listSize; i++) {
+        (copy->elements).get()[i]= elements.get()[i];
+    }
+    copy->listSize= listSize;
+    if (defaultValue != NULL) {
+        copy->defaultValue.reset(new T(*defaultValue));
+    }
+
+    return copy;
 }
 
 template <class T>

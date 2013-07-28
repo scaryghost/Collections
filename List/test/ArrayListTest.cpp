@@ -5,9 +5,11 @@
 #include <stdexcept>
 #include <vector>
 
+#include "Collection.h"
 #include "List.h"
 #include "List/ArrayList.h"
 
+using etsai::collections::Collection;
 using etsai::collections::List;
 using etsai::collections::list::ArrayList;
 using std::cout;
@@ -302,6 +304,22 @@ int main(int argc, char **argv) {
         }
         RESULT_HANDLER(exception);
         cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Cloning 1= ";
+        Collection<Integer> *copy= l->clone();
+        RESULT_HANDLER(l->equals(copy) && l->size() == copy->size() && l->capacity() == copy->capacity());
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Cloning 2= ";
+        l->clear();
+        Collection<Integer> *copy= l->clone();
+        RESULT_HANDLER(l->equals(copy) && l->size() == copy->size() && l->capacity() == copy->capacity());
+        cout << "Size: " << copy->size() << endl;
     });
 
     for(UnitTest& test: unitTests) {
