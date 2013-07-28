@@ -5,6 +5,8 @@
 
 #include <initializer_list>
 #include <memory>
+#include <sstream>
+#include <stdexcept>
 
 namespace etsai {
 namespace collections {
@@ -12,7 +14,10 @@ namespace list {
 
 using collections::List;
 using std::initializer_list;
+using std::invalid_argument;
+using std::out_of_range;
 using std::shared_ptr;
+using std::stringstream;
 
 /**
  * Manages a circular linked list and implements the List interface
@@ -79,6 +84,258 @@ private:
     unique_ptr<T, Delete<T>> tail;
     unique_ptr<T> defaultValue;
 };
+
+template <class T>
+CircularLinkedList<T>::CircularLinkedList() : listSize(0), tail(NULL, Delete<T>()) {
+}
+
+template <class T>
+CircularLinkedList<T>::CircularLinkedList(const T& defaultValue) : CircularLinkedList(), defaultValue(new T(defaultValue)) {
+}
+
+template <class T>
+CircularLinkedList<T>::CircularLinkedList(initialize_list<T> collection) : CircularLinkedList() {
+    for(auto &elem: collection) {
+        add(elem);
+    }
+}
+
+template <class T>
+bool CircularLinkedList<T>::equals(initializer_list<T> collection) const {
+    if (listSize != collection->size()) {
+        return false;
+    }
+
+    Note *ptr= tail->next;
+    auto it= collection.begin();
+    for(it; it->value == ptr->value && it != collection.end(); it++, ptr= ptr->next);
+
+    return it->value == ptr->value && it == collection.end();
+}
+
+template <class T>
+bool CircularLinkedList<T>::equals(const Collection<T>* collection) const {
+    if (listSize != collection->size()) {
+        return false;
+    }
+
+    bool equal= true;
+    Note *ptr= tail->next;
+    collection->each([&equal, &ptr](const T& elem) -> void {
+        equal= equal && (ptr->value == elem);
+        ptr= ptr->next;
+    });
+    
+    return equal;
+}
+
+template <class T>
+int CircularLinkedList<T>::size() const {
+    return listSize;
+}
+
+template <class T>
+int CircularLinkedList<T>::capacity() const {
+    return listSize;
+}
+
+template <class T>
+bool CircularLinkedList<T>::isEmpty() const {
+    return tail == NULL;
+}
+
+template <class T>
+bool CircularLinkedList<T>::contains(const T& elem) const {
+    bool contain= false;
+
+    each([&contain](const T& myElem) -> void {
+        contain= contain || elem == myElem.value;
+    });
+    return contain;
+}
+
+template <class T>
+string CircularLinkedList<T>::toString() const {
+    stringstream str;
+    bool first(true);
+
+    str << "[";
+    each([&str, &first](const T& elem) -> void {
+        if (!first) {
+            str << ", ";
+        }
+        str << elem;
+        first= false;
+    });
+    str << "]";
+    return str.str();
+}
+
+template <class T>
+void CircularLinkedList<T>::each(const function<void (const T&)>& lambda) const {
+    Node *ptr= tail->next;
+
+    do {
+        lambda(ptr->value);
+        ptr= ptr->next;
+    } while(ptr != tail->next);
+}
+
+template <class T>
+void CircularLinkedList<T>::each(const function<void (T&)>& lambda) {
+    Node *ptr= tail->next;
+
+    do {
+        lambda(ptr->value);
+        ptr= ptr->next;
+    } while(ptr != tail->next);
+}
+
+template <class T>
+bool CircularLinkedList<T>::remove(const T& elem) {
+    Node *ptr= tail->next, prev= tail;
+
+    do {
+        prev= ptr;
+        ptr= ptr->next;
+    } while(ptr != tail->next && !(ptr->value == elem->value));
+
+    if (ptr->value == elem->value) {
+        if (ptr == tail) {
+            tail= prev;
+        }
+        prev->next= ptr->next;
+        delete ptr;
+        return true;
+    }
+    return false;
+}
+
+template <class T>
+void CircularLinkedList<T>::add(const T& elem) {
+    Node *ptr= new Node();
+    ptr->value= elem;
+
+    if (tail == NULL) {
+        tail= ptr;
+        tail->next= tail;
+    } else {
+        ptr->next= tail->next;
+        tail->next= ptr;
+        tail= ptr;
+    }
+    listSize++;
+}
+
+template <class T>
+void CircularLinkedList<T>::clear() {
+    tail.reset(NULL);
+    listSize= 0;
+}
+
+template <class T>
+void CircularLinkedList<T>::resize(int newSize) {
+    if (newSize < listSize) {
+        Node *ptr= tail->next;
+
+        for(int i= 0; i < newSize; i++) {
+            ptr= ptr->next;
+        }
+        
+        Node *it= ptr->next;
+        while(it != tail) {
+            ptr->next= it->next;
+            delete it;
+            it= ptr->next;
+        }
+        tail= ptr;
+        tail->next= it->next;
+        delete it;
+        
+        listSize= newSize;
+    }
+}
+
+
+template <class T>
+void CircularLinkedList<T>::add(int index, const T& elem) {
+    Node *ptr= tail->next, *prev= tail;
+
+    if (index >= listSize) {
+        T filler;
+
+        if (defaultValue != NULL) {
+            filler= *defaultValue;
+        }
+        for(int i= listSize; i < index; i++) {
+            add(filler);
+        }
+        add(elem);
+    } else {
+        for(int i= 0; i < index; i++,prev=ptr,ptr= ptr->next);
+    
+        Node *newNode= new Node();
+        newNode->value= elem;
+        newNode->next= ptr;
+        prev->next= newNode;
+    }
+}
+
+template <class T>
+void CircularLinkedList<T>::set(int index, const T& elem) throw(out_of_range) {
+    RANGE_CHECK(index)
+
+    Node *ptr= tail->next;
+    for(int i= 0; i < index; i++,ptr= ptr->next);
+    ptr->value= elem;
+}
+
+template <class T>
+T CircularLinkedList<T>::minus(int index) throw(out_of_range) {
+    RANGE_CHECK(index)
+
+    Node *ptr= tail->next, prev= tail;
+    for(int i= 0; i < index; i++,ptr= tail,tail= tail->next);
+
+    T value= ptr->value;
+    prev->next= ptr->next;
+    delete ptr;
+
+    return value;
+}
+
+template <class T>
+T CircularLinkedList<T>::get(int index) const throw(out_of_range) {
+    RANGE_CHECK(index)
+
+    Node *ptr= tail->next;
+    for(int i= 0; i < index; i++,ptr= ptr->next);
+    return ptr->value;
+}
+
+template <class T>
+shared_ptr<List<T>> CircularLinkedList<T>::subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument) {
+    if (startIndex < 0 || startIndex >= listSize || endIndex < 0 || endIndex >= listSize) {
+        stringstream msg;
+        msg << "Indices (" << startIndex << ", " << endIndex << ") lay outside the range [0, " << listSize - 1 << "]";
+        throw out_of_range(msg.str());
+    } else if (endIndex < startIndex) {
+        stringstream msg;
+        msg << "End index < start index (" << endIndex << " < " << startIndex << ")";
+        throw invalid_argument(msg.str());
+    }
+
+    CircularLinkedList<T> *newList= new CircularLinkedList<T>();
+
+    Node *ptr;
+    int i;
+    for(i= 0; i < startIndex; i++, ptr= ptr->next);
+    for(i; i < endIndex; i++, ptr= ptr->next) {
+        newList->add(ptr->value);
+    }
+
+    return shared_ptr<List<T>>(newList);
+}
 
 }
 }

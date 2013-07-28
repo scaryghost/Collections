@@ -6,6 +6,13 @@
 #include <memory>
 #include <stdexcept>
 
+#define RANGE_CHECK(index) \
+if (index < 0 || index >= listSize) { \
+    stringstream msg; \
+    msg << "Index (" << index << ") out of range [0, " << listSize - 1 << "]"; \
+    throw out_of_range(msg.str()); \
+}
+
 namespace etsai {
 namespace collections {
 

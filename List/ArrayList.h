@@ -1,20 +1,14 @@
 #ifndef ETSAI_COLLECTIONS_LIST_ARRAYLIST_H
 #define ETSAI_COLLECTIONS_LIST_ARRAYLIST_H
 
+#include "List.h"
+
 #include <functional>
 #include <initializer_list>
 #include <memory>
 #include <sstream>
 #include <string.h>
 
-#include "List.h"
-
-#define RANGE_CHECK(index) \
-if (index < 0 || index >= listSize) { \
-    stringstream msg; \
-    msg << "Index (" << index << ") out of range [0, " << listSize - 1 << "]"; \
-    throw out_of_range(msg.str()); \
-}
 
 namespace etsai {
 namespace collections {
