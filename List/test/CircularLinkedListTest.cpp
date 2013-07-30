@@ -92,12 +92,6 @@ int main(int argc, char **argv) {
         RESULT_HANDLER(l->capacity() == 6);
     });
     unitTests.push_back([&pass, &fail, &index]() -> void {
-        shared_ptr<List<Integer>> l(new CircularLinkedList<Integer>(1024));
-        index++;
-        cout << "Test " << index << ": Capacity Test 2= ";
-        RESULT_HANDLER(l->capacity() == 1024);
-    });
-    unitTests.push_back([&pass, &fail, &index]() -> void {
         shared_ptr<List<Integer>> l(new CircularLinkedList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
         index++;
         cout << "Test " << index << ": Remove first = ";
@@ -235,7 +229,7 @@ int main(int argc, char **argv) {
         index++;
         cout << "Test " << index << ": Resize 1= ";
         l->resize(10);
-        RESULT_HANDLER(l->equals({0, 1, 2, 3, 4}) && l->capacity() == 10);
+        RESULT_HANDLER(l->equals({0, 1, 2, 3, 4}) && l->capacity() == 5);
         cout << l->toString() << endl;
     });
     unitTests.push_back([&pass, &fail, &index]() -> void {

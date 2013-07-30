@@ -7,11 +7,14 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 namespace etsai {
 namespace collections {
 namespace list {
 
+using std::cout;
+using std::endl;
 using collections::List;
 using std::initializer_list;
 using std::invalid_argument;
@@ -129,7 +132,7 @@ bool CircularLinkedList<T>::equals(initializer_list<T> collection) const {
     auto it= collection.begin();
     for(it; *it == ptr->value && it != collection.end(); it++, ptr= ptr->next);
 
-    return *it == ptr->value && it == collection.end();
+    return it == collection.end();
 }
 
 template <class T>
@@ -232,6 +235,7 @@ bool CircularLinkedList<T>::remove(const T& elem) {
                 tail= prev;
             }
             prev->next= ptr->next;
+            listSize--;
             delete ptr;
             return true;
         }
@@ -316,6 +320,7 @@ void CircularLinkedList<T>::add(int index, const T& elem) {
         newNode->value= elem;
         newNode->next= ptr;
         prev->next= newNode;
+        listSize++;
     }
 }
 
@@ -368,7 +373,7 @@ shared_ptr<List<T>> CircularLinkedList<T>::subList(int startIndex, int endIndex)
     Node<T> *ptr(tail->next);
     int i;
     for(i= 0; i < startIndex; i++, ptr= ptr->next);
-    for(i; i < endIndex; i++, ptr= ptr->next) {
+    for(i; i <= endIndex; i++, ptr= ptr->next) {
         newList->add(ptr->value);
     }
 
