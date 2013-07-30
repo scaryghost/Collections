@@ -121,6 +121,9 @@ bool CircularLinkedList<T>::equals(initializer_list<T> collection) const {
     if (listSize != collection.size()) {
         return false;
     }
+    if (tail == NULL) {
+        return true;
+    }
 
     Node<T> *ptr= tail->next;
     auto it= collection.begin();
@@ -133,6 +136,9 @@ template <class T>
 bool CircularLinkedList<T>::equals(const Collection<T>* collection) const {
     if (listSize != collection->size()) {
         return false;
+    }
+    if (tail == NULL) {
+        return true;
     }
 
     bool equal= true;
@@ -189,40 +195,46 @@ string CircularLinkedList<T>::toString() const {
 
 template <class T>
 void CircularLinkedList<T>::each(const function<void (const T&)>& lambda) const {
-    Node<T> *ptr= tail->next;
+    if (tail != NULL) {
+        Node<T> *ptr= tail->next;
 
-    do {
-        lambda(ptr->value);
-        ptr= ptr->next;
-    } while(ptr != tail->next);
+        do {
+            lambda(ptr->value);
+            ptr= ptr->next;
+        } while(ptr != tail->next);
+    }
 }
 
 template <class T>
 void CircularLinkedList<T>::each(const function<void (T&)>& lambda) {
-    Node<T> *ptr= tail->next;
+    if (tail != NULL) {
+        Node<T> *ptr= tail->next;
 
-    do {
-        lambda(ptr->value);
-        ptr= ptr->next;
-    } while(ptr != tail->next);
+        do {
+            lambda(ptr->value);
+            ptr= ptr->next;
+        } while(ptr != tail->next);
+    }
 }
 
 template <class T>
 bool CircularLinkedList<T>::remove(const T& elem) {
-    Node<T> *ptr(tail->next), *prev(tail);
+    if (tail != NULL) {
+        Node<T> *ptr(tail->next), *prev(tail);
 
-    do {
-        prev= ptr;
-        ptr= ptr->next;
-    } while(ptr != tail->next && !(ptr->value == elem));
+        do {
+            prev= ptr;
+            ptr= ptr->next;
+        } while(ptr != tail->next && !(ptr->value == elem));
 
-    if (ptr->value == elem) {
-        if (ptr == tail) {
-            tail= prev;
+        if (ptr->value == elem) {
+            if (ptr == tail) {
+                tail= prev;
+            }
+            prev->next= ptr->next;
+            delete ptr;
+            return true;
         }
-        prev->next= ptr->next;
-        delete ptr;
-        return true;
     }
     return false;
 }
@@ -247,12 +259,14 @@ template <class T>
 void CircularLinkedList<T>::clear() {
     Node<T> *ptr;
 
-    while((ptr= tail->next) != tail) {
-        tail->next= ptr->next;
-        delete ptr;
-    }
+    if (tail != NULL) {
+        while((ptr= tail->next) != tail) {
+            tail->next= ptr->next;
+            delete ptr;
+        }
 
-    delete tail;    
+        delete tail;    
+    }
     tail= NULL;
     listSize= 0;
 }
@@ -283,8 +297,6 @@ void CircularLinkedList<T>::resize(int newSize) {
 
 template <class T>
 void CircularLinkedList<T>::add(int index, const T& elem) {
-    Node<T> *ptr(tail->next), *prev(tail);
-
     if (index >= listSize) {
         T filler;
 
@@ -296,6 +308,8 @@ void CircularLinkedList<T>::add(int index, const T& elem) {
         }
         add(elem);
     } else {
+        Node<T> *ptr(tail->next), *prev(tail);
+
         for(int i= 0; i < index; i++,prev=ptr,ptr= ptr->next);
     
         Node<T> *newNode(new Node<T>());
@@ -351,7 +365,7 @@ shared_ptr<List<T>> CircularLinkedList<T>::subList(int startIndex, int endIndex)
 
     CircularLinkedList<T> *newList= new CircularLinkedList<T>();
 
-    Node<T> *ptr;
+    Node<T> *ptr(tail->next);
     int i;
     for(i= 0; i < startIndex; i++, ptr= ptr->next);
     for(i; i < endIndex; i++, ptr= ptr->next) {
