@@ -9,7 +9,6 @@
 #include <sstream>
 #include <string.h>
 
-
 namespace etsai {
 namespace collections {
 namespace list {
@@ -67,24 +66,12 @@ public:
     ~ArrayList();
 
     virtual ArrayList* clone() const;
-    /**
-     * Checks if both collection shave the same elements in the same order.  This version provides a way to quickly 
-     * check the contents of a list
-     * @param   collection      Collection to check again
-     * @return  True if both collection shave the same elements and ordering
-     */
     virtual bool equals(initializer_list<T> collection) const;
-    /**
-     * Checks if both collection shave the same elements in the same order
-     * @param   collection      Collection to check again
-     * @return  True if both collection shave the same elements and ordering
-     */
     virtual bool equals(const Collection<T>* collection) const;
     virtual int size() const;
     virtual int capacity() const;
     virtual bool isEmpty() const;
     virtual bool contains(const T& elem) const;
-    virtual string toString() const;
     virtual void each(const function<void (const T&)>& lambda) const;
     virtual void each(const function<void (T&)>& lambda);
 
@@ -106,7 +93,7 @@ private:
     };
 
     int listCapacity, listSize;
-    unique_ptr<T, ListDeleter<T> > elements;
+    unique_ptr<T, ListDeleter<T>> elements;
     unique_ptr<T> defaultValue;
 };
 
@@ -225,23 +212,6 @@ bool ArrayList<T>::contains(const T& elem) const {
 }
 
 template <class T>
-string ArrayList<T>::toString() const {
-    stringstream str;
-    bool first(true);
-
-    str << "[";
-    each([&str, &first](const T& elem) -> void {
-        if (!first) {
-            str << ", ";
-        }
-        str << elem;
-        first= false;
-    });
-    str << "]";
-    return str.str(); 
-}
-
-template <class T>
 void ArrayList<T>::each(const function<void (const T&)>& lambda) const {
     function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
         if (index >= listSize) {
@@ -350,13 +320,13 @@ void ArrayList<T>::add(int index, const T& elem) {
 
 template <class T>
 void ArrayList<T>::set(int index, const T& elem) throw(out_of_range) {
-    RANGE_CHECK(index)
+    this->rangeCheck(index, listSize);
     elements.get()[index]= elem;
 }
 
 template <class T>
 T ArrayList<T>::minus(int index) throw(out_of_range) {
-    RANGE_CHECK(index)
+    this->rangeCheck(index, listSize);
     T elem= elements.get()[index];
     listSize--;
     for(int i= index; i < listSize; i++) {
@@ -367,7 +337,7 @@ T ArrayList<T>::minus(int index) throw(out_of_range) {
 
 template <class T>
 T ArrayList<T>::get(int index) const throw(out_of_range) {
-    RANGE_CHECK(index)
+    this->rangeCheck(index, listSize);
     return elements.get()[index];
 }
 

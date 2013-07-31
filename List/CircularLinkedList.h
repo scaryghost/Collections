@@ -37,24 +37,12 @@ public:
     ~CircularLinkedList();
     
     virtual CircularLinkedList* clone() const;
-    /**
-     * Checks if both collection shave the same elements in the same order.  This version provides a way to quickly 
-     * check the contents of a list
-     * @param   collection      Collection to check again
-     * @return  True if both collection shave the same elements and ordering
-     */
     virtual bool equals(initializer_list<T> collection) const;
-    /**
-     * Checks if both collection shave the same elements in the same order
-     * @param   collection      Collection to check again
-     * @return  True if both collection shave the same elements and ordering
-     */
     virtual bool equals(const Collection<T>* collection) const;
     virtual int size() const;
     virtual int capacity() const;
     virtual bool isEmpty() const;
     virtual bool contains(const T& elem) const;
-    virtual string toString() const;
     virtual void each(const function<void (const T&)>& lambda) const;
     virtual void each(const function<void (T&)>& lambda);
 
@@ -177,23 +165,6 @@ bool CircularLinkedList<T>::contains(const T& elem) const {
         contain= contain || elem == myElem;
     });
     return contain;
-}
-
-template <class T>
-string CircularLinkedList<T>::toString() const {
-    stringstream str;
-    bool first(true);
-
-    str << "[";
-    each([&str, &first](const T& elem) -> void {
-        if (!first) {
-            str << ", ";
-        }
-        str << elem;
-        first= false;
-    });
-    str << "]";
-    return str.str();
 }
 
 template <class T>
@@ -326,7 +297,7 @@ void CircularLinkedList<T>::add(int index, const T& elem) {
 
 template <class T>
 void CircularLinkedList<T>::set(int index, const T& elem) throw(out_of_range) {
-    RANGE_CHECK(index)
+    this->rangeCheck(index, listSize);
 
     Node<T> *ptr(tail->next);
     for(int i= 0; i < index; i++,ptr= ptr->next);
@@ -335,7 +306,7 @@ void CircularLinkedList<T>::set(int index, const T& elem) throw(out_of_range) {
 
 template <class T>
 T CircularLinkedList<T>::minus(int index) throw(out_of_range) {
-    RANGE_CHECK(index)
+    this->rangeCheck(index, listSize);
 
     Node<T> *ptr(tail->next), *prev(tail);
     for(int i= 0; i < index; i++,ptr= tail,tail= tail->next);
@@ -349,7 +320,7 @@ T CircularLinkedList<T>::minus(int index) throw(out_of_range) {
 
 template <class T>
 T CircularLinkedList<T>::get(int index) const throw(out_of_range) {
-    RANGE_CHECK(index)
+    this->rangeCheck(index, listSize);
 
     Node<T> *ptr(tail->next);
     for(int i= 0; i < index; i++,ptr= ptr->next);

@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <initializer_list>
+#include <sstream>
 #include <string>
 
 namespace etsai {
@@ -11,6 +12,7 @@ namespace collections {
 using std::function;
 using std::initializer_list;
 using std::string;
+using std::stringstream;
 
 /**
  * Pure virtual class defining the properties of a collection
@@ -69,7 +71,7 @@ public:
      * Creates a string representation of the collection
      * @return  String representation of the collection
      */
-    virtual string toString() const= 0;
+    virtual string toString() const;
     /**
      * Applies the lambda to each element in the collection.  This version does not allow you to modify the elements.
      * @param   lambda      Lambda function to evaluate each element with
@@ -107,6 +109,23 @@ public:
 
 template <class T>
 Collection<T>::~Collection() {
+}
+
+template <class T>
+string Collection<T>::toString() const {
+    stringstream str;
+    bool first(true);
+
+    str << "[";
+    each([&str, &first](const T& elem) -> void {
+        if (!first) {
+            str << ", ";
+        }
+        str << elem;
+        first= false;
+    });
+    str << "]";
+    return str.str();
 }
 
 }   //namespace collections
