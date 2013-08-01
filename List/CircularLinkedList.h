@@ -13,9 +13,6 @@ namespace etsai {
 namespace collections {
 namespace list {
 
-using std::cout;
-using std::endl;
-using collections::List;
 using std::initializer_list;
 using std::invalid_argument;
 using std::out_of_range;
@@ -23,17 +20,36 @@ using std::shared_ptr;
 using std::stringstream;
 
 /**
- * Manages a circular linked list and implements the List interface
+ * Implements the List interface with a circular linked list
  * @author etsai
  */
 template <class T>
-class CircularLinkedList : public List<T> {
+class CircularLinkedList : public collections::List<T> {
 public:
-
+    /**
+     * Default constructor that creates an empty list
+     */
     CircularLinkedList();
+    /**
+     * Creates an empty list, that will fill gaps with the default value during expansions
+     * @param   defaultValue    Default value to fill gaps
+     */
     CircularLinkedList(const T& defaultValue);
+    /**
+     * Creates a list with the values in the initializer list
+     * @param   collection      Collection of values to fill the list with
+     */
     CircularLinkedList(initializer_list<T> collection);
+    /**
+     * Creates a list with the values in the initializer list, using the default value to fill in gaps 
+     * for list expansions
+     * @param   collection      Collection of values to fill the list with
+     * @param   defaultValue    Default value to fill gaps
+     */
     CircularLinkedList(initializer_list<T> collection, const T& defaultValue);
+    /**
+     * Deletes the allocated memory for each node
+     */
     ~CircularLinkedList();
     
     virtual CircularLinkedList* clone() const;
@@ -48,6 +64,9 @@ public:
 
     virtual bool remove(const T& elem); 
     virtual void add(const T& elem);
+    /**
+     * This function will delete all memory allocated for the list nodes, resetting the size back to 0
+     */
     virtual void clear();
     virtual void resize(int newSize);
     virtual void add(int index, const T& elem);

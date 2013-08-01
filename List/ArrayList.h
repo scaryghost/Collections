@@ -13,7 +13,6 @@ namespace etsai {
 namespace collections {
 namespace list {
 
-using collections::List;
 using std::function;
 using std::initializer_list;
 using std::invalid_argument;
@@ -23,11 +22,11 @@ using std::stringstream;
 using std::unique_ptr;
 
 /**
- * Manages a standard array and implements the List interface
+ * Implements the List interface with an array
  * @author etsai
  */
 template <class T>
-class ArrayList : public List<T> {
+class ArrayList : public collections::List<T> {
 public:
     /**
      * Constructs an empty ArrayList with 0 size and capacity
@@ -77,6 +76,9 @@ public:
 
     virtual bool remove(const T& elem); 
     virtual void add(const T& elem);
+    /**
+     * This function will reset the size back to 0, but will not change the capacity
+     */
     virtual void clear();
     virtual void resize(int newSize);
     virtual void add(int index, const T& elem);

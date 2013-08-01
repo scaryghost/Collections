@@ -81,7 +81,7 @@ public:
 protected:
     /**
      * Convenience method to check if the index is between the range [0, size - 1].  The method will throw an 
-     * out_of_range excpetion if the index is outside the prescribed boundary.
+     * out_of_range excepetion if the index is outside the prescribed boundary.
      * @param   index       Index value to check
      * @param   listSize    Size of the list
      */
