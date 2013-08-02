@@ -47,6 +47,19 @@ public:
      */
     virtual bool equals(const Collection<T>* collection) const= 0;
     /**
+     * Reverses the ordering of the list.  This version does not change the object.  Instead, it returns a copy of the elements, 
+     * but in reversed order.  It is the caller's responsiblity to free the allocated memory.
+     * @return  Copy of the list, with reversed ordering
+     */
+    virtual List<T>* reverse() const= 0;
+    /**
+     * Reverses the ordering of the list.  This version gives the option of applying the change to the calling object, rather than 
+     * create a copy of the list.  It is the caller's responsiblity to free the allocated memory of mutate is set to false.
+     * @param   mutate  Determine if the original list should be modified
+     * @return  if mutate is true, NULL is returned; otherwise, copy of the list with reversed ordering
+     */
+    virtual List<T>* reverse(bool mutate)= 0;
+    /**
      * Replace the element at the specific index with the new element
      * @param   index   Index to replace
      * @param   elem    Element to be stored 

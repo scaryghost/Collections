@@ -347,7 +347,57 @@ int main(int argc, char **argv) {
         RESULT_HANDLER(l->equals({-1, -1, -1, -1, -1, 1}));
         cout << l->toString() << endl;
     });
-
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, -1));
+        index++;
+        cout << "Test " << index << ": Reverse 1= ";
+        l->reverse(true);
+        RESULT_HANDLER(l->equals({9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1}, -1));
+        index++;
+        cout << "Test " << index << ": Reverse 2= ";
+        List<Integer> *copy= l->reverse();
+        RESULT_HANDLER(copy->equals({1, 0}));
+        cout << copy->toString() << endl;
+        delete copy;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0}, -1));
+        index++;
+        cout << "Test " << index << ": Reverse 1= ";
+        l->reverse(true);
+        RESULT_HANDLER(l->equals({0}));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0}, -1));
+        index++;
+        cout << "Test " << index << ": Reverse 2= ";
+        List<Integer> *copy= l->reverse();
+        RESULT_HANDLER(copy->equals({0}));
+        cout << copy->toString() << endl;
+        delete copy;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>());
+        index++;
+        cout << "Test " << index << ": Reverse 1= ";
+        l->reverse(true);
+        RESULT_HANDLER(l->equals({}));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>());
+        index++;
+        cout << "Test " << index << ": Reverse 2= ";
+        List<Integer> *copy= l->reverse();
+        RESULT_HANDLER(copy->equals({}));
+        cout << copy->toString() << endl;
+        delete copy;
+    });
     for(UnitTest& test: unitTests) {
         test();
     }

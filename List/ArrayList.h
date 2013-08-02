@@ -80,6 +80,8 @@ public:
      * This function will reset the size back to 0, but will not change the capacity
      */
     virtual void clear();
+    virtual ArrayList<T>* reverse() const;
+    virtual ArrayList<T>* reverse(bool mutate);
     virtual void resize(int newSize);
     virtual void add(int index, const T& elem);
     virtual void set(int index, const T& elem) throw(out_of_range);
@@ -292,6 +294,36 @@ void ArrayList<T>::resize(int newSize) {
         elements.reset(newList);
         listCapacity= newSize;
     }
+}
+
+template <class T>
+ArrayList<T>* ArrayList<T>::reverse() const {
+    ArrayList<T>* copy= (defaultValue == NULL) ? new ArrayList<T>(listCapacity) : new ArrayList<T>(listCapacity, *defaultValue);
+
+    int rIndex= listSize - 1;
+    copy->listSize= listSize;
+    each([&rIndex, &copy](const T& elem) -> void {
+        copy->set(rIndex, elem);
+        rIndex--;
+    });
+    return copy;
+}
+
+template <class T>
+ArrayList<T>* ArrayList<T>::reverse(bool mutate) {
+    if (!mutate) {
+        return reverse();
+    }
+
+    int half= listSize / 2;
+    for(int i= 0; i < half; i++) {
+        int pairIndex= listSize - 1 - i;
+        T tmp= get(i);
+
+        set(i, get(pairIndex));
+        set(pairIndex, tmp);
+    }
+    return NULL;
 }
 
 template <class T>

@@ -69,6 +69,8 @@ public:
      * This function will delete all memory allocated for the list nodes, resetting the size back to 0
      */
     virtual void clear();
+    virtual CircularLinkedList<T>* reverse() const;
+    virtual CircularLinkedList<T>* reverse(bool mutate);
     virtual void resize(int newSize);
     virtual void add(int index, const T& elem);
     virtual void set(int index, const T& elem) throw(out_of_range);
@@ -260,6 +262,44 @@ void CircularLinkedList<T>::clear() {
         tail.reset();
     }
     listSize= 0;
+}
+
+template <class T>
+CircularLinkedList<T>* CircularLinkedList<T>::reverse() const {
+    CircularLinkedList<T>* copy= (defaultValue == NULL) ? new CircularLinkedList<T>() : new CircularLinkedList<T>(*defaultValue);
+
+    each([&copy](const T& elem) -> void {
+        copy->add(0, elem);
+    });
+    return copy;
+}
+
+template <class T>
+CircularLinkedList<T>* CircularLinkedList<T>::reverse(bool mutate) {
+    if (!mutate) {
+        return reverse();
+    }
+
+    if (tail != NULL) {
+        shared_ptr<Node<T>>* elements= new shared_ptr<Node<T>>[listSize];
+        shared_ptr<Node<T>> ptr= tail->next;
+        int index= 0;
+    
+        do {
+            elements[index]= ptr;
+            ptr= ptr->next;
+            index++;
+        } while(ptr != tail->next);
+        for(int rIndex= listSize - 1; rIndex > 0; rIndex--) {
+            elements[rIndex]->next= elements[rIndex - 1];
+        }
+        elements[0]->next= elements[listSize - 1];
+        tail= elements[0];
+
+        delete []elements;
+    }
+
+    return NULL;
 }
 
 template <class T>
