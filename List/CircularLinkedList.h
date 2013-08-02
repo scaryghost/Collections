@@ -74,7 +74,7 @@ public:
     virtual void set(int index, const T& elem) throw(out_of_range);
     virtual T minus(int index) throw(out_of_range);
     virtual T get(int index) const throw(out_of_range);
-    virtual shared_ptr<List<T>> subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument);
+    virtual CircularLinkedList<T>* subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument);
 
 private:
     template <class U>
@@ -344,7 +344,7 @@ T CircularLinkedList<T>::get(int index) const throw(out_of_range) {
 }
 
 template <class T>
-shared_ptr<List<T>> CircularLinkedList<T>::subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument) {
+CircularLinkedList<T>* CircularLinkedList<T>::subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument) {
     if (startIndex < 0 || startIndex >= listSize || endIndex < 0 || endIndex >= listSize) {
         stringstream msg;
         msg << "Indices (" << startIndex << ", " << endIndex << ") lay outside the range [0, " << listSize - 1 << "]";
@@ -364,7 +364,7 @@ shared_ptr<List<T>> CircularLinkedList<T>::subList(int startIndex, int endIndex)
         newList->add(ptr->value);
     }
 
-    return shared_ptr<List<T>>(newList);
+    return newList;
 }
 
 }

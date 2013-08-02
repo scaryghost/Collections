@@ -3,7 +3,6 @@
 
 #include "Collection.h"
 
-#include <memory>
 #include <sstream>
 #include <stdexcept>
 
@@ -12,7 +11,6 @@ namespace collections {
 
 using std::out_of_range;
 using std::invalid_argument;
-using std::shared_ptr;
 using std::stringstream;
 
 /**
@@ -70,14 +68,15 @@ public:
      */
     virtual T get(int index) const throw(out_of_range)= 0;
     /**
-     * Creates a sublist starting from the start index to the end index
+     * Creates a sublist starting from the start index to the end index.  It is the function caller's responsibility to free 
+     * the allocated memory.
      * @param   startIndex  Index to start from
      * @param   endIndex    Index to end at
      * @return  Sublist of the List
      * @throw out_of_range      If either start or end index is outside the range [0, list size - 1]
      * @throw invalid_argument  If endIndex < startIndex
      */
-    virtual shared_ptr<List<T>> subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument)= 0;
+    virtual List<T>* subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument)= 0;
 protected:
     /**
      * Convenience method to check if the index is between the range [0, size - 1].  The method will throw an 
