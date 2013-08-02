@@ -47,15 +47,15 @@ public:
      */
     virtual bool equals(const Collection<T>* collection) const= 0;
     /**
-     * Reverses the ordering of the list.  This version does not change the object.  Instead, it returns a copy of the elements, 
-     * but in reversed order.  It is the caller's responsiblity to free the allocated memory.
+     * Reverses the ordering of the list.  This version does not change the object, but instead returns a copy of the elements in reversed order.  
+     * It is the caller's responsiblity to free the allocated memory.
      * @return  Copy of the list, with reversed ordering
      */
     virtual List<T>* reverse() const= 0;
     /**
      * Reverses the ordering of the list.  This version gives the option of applying the change to the calling object, rather than 
-     * create a copy of the list.  It is the caller's responsiblity to free the allocated memory of mutate is set to false.
-     * @param   mutate  Determine if the original list should be modified
+     * creating a copy of the list.  It is the caller's responsiblity to free the allocated memory if mutate is set to false.
+     * @param   mutate  Determine if a copy should be created, or apply the change to the calling object
      * @return  if mutate is true, NULL is returned; otherwise, copy of the list with reversed ordering
      */
     virtual List<T>* reverse(bool mutate)= 0;
@@ -90,6 +90,21 @@ public:
      * @throw invalid_argument  If endIndex < startIndex
      */
     virtual List<T>* subList(int startIndex, int endIndex) const throw(out_of_range, invalid_argument)= 0;
+    /**
+     * Applies a function across all elements with an initial value with a left fold ordering.  Evaluates f(...f(f(a, b0), b1), bn)
+     * @param   initialValue    Initial value to give to the function
+     * @param   lambda          Lambda that takes 2 parameters, mapping (U, T) -> U
+     */
+    template <class U>
+    U foldLeft(const U& initialValue, const function<U (const U&, const T&)>& lambda) const;
+    /**
+     * Applies a function across all elements with an initial value with a right fold odering.  Evaluates f(b0, ...f(bn-1, f(bn, a)))
+     * @param   initialValue    Initial value to give to the function
+     * @param   lambda          Lambda that takes 2 parameters, mapping (T, U) -> U
+     */
+    template <class U>
+    U foldRight(const U& initialValue, const function<U (const T&, const U&)>& lambda) const;
+
 protected:
     /**
      * Convenience method to check if the index is between the range [0, size - 1].  The method will throw an 
@@ -103,6 +118,37 @@ protected:
 template <class T>
 List<T>::~List() {
 }
+
+template <class T> template <class U>
+U List<T>::foldLeft(const U& initialValue, const function<U (const U&, const T&)>& lambda) const {
+    U accum;
+    int listSize= this->size();
+    for(int i= 0; i < listSize; i++) {
+        if (i == 0) {
+            accum= lambda(initialValue, get(i));
+        } else {
+            accum= lambda(accum, get(i));
+        }
+    }
+
+    return accum;
+}
+
+template <class T> template <class U>
+U List<T>::foldRight(const U& initialValue, const function<U (const T&, const U&)>& lambda) const {
+    U accum;
+    int end= this->size() - 1;
+    for(int i= end; i >= 0; i--) {
+        if (i == end) {
+            accum= lambda(get(i), initialValue);
+        } else {
+            accum= lambda(get(i), accum);
+        }
+    }
+
+    return accum;
+}
+
 
 template <class T>
 void List<T>::rangeCheck(int index, int listSize) const {

@@ -398,6 +398,68 @@ int main(int argc, char **argv) {
         cout << copy->toString() << endl;
         delete copy;
     });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Fold left 1= ";
+        int sum= 0;
+        sum= l->foldLeft<int>(sum, [](const int& l, const Integer& r) -> int {
+            return l + r.get();
+        });
+        RESULT_HANDLER(sum == 45);
+        cout << sum << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Fold left 2= ";
+        int sum= 0;
+        sum= l->foldLeft<int>(sum, [](const int& l, const Integer& r) -> int {
+            return l - r.get();
+        });
+        RESULT_HANDLER(sum == -45);
+        cout << sum << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Fold right 1= ";
+        int sum= 0;
+        sum= l->foldRight<int>(sum, [](const Integer& l, const int& r) -> int {
+            return l.get() - r;
+        });
+        RESULT_HANDLER(sum == -5);
+        cout << sum << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Exists 1= ";
+        RESULT_HANDLER(l->exists([](const Integer& i) -> bool { cout << i << endl; return i.get() < 10; }));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Exists 2= ";
+        RESULT_HANDLER(!l->exists([](const Integer& i) -> bool { cout << i << endl; return i.get() < -1; }));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": For All 1= ";
+        RESULT_HANDLER(l->forAll([](const Integer& i) -> bool { cout << i << endl; return i.get() < 10; }));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": For All 2= ";
+        RESULT_HANDLER(!l->forAll([](const Integer& i) -> bool { cout << i << endl; return i.get() < -1; }));
+        cout << l->toString() << endl;
+    });
+
     for(UnitTest& test: unitTests) {
         test();
     }

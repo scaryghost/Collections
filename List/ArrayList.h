@@ -73,6 +73,8 @@ public:
     virtual bool contains(const T& elem) const;
     virtual void each(const function<void (const T&)>& lambda) const;
     virtual void each(const function<void (T&)>& lambda);
+    virtual bool exists(const function<bool (const T&)>& lambda) const;
+    virtual bool forAll(const function<bool (const T&)>& lambda) const;
 
     virtual bool remove(const T& elem); 
     virtual void add(const T& elem);
@@ -204,45 +206,67 @@ bool ArrayList<T>::isEmpty() const {
 template <class T>
 bool ArrayList<T>::contains(const T& elem) const {
     bool found= false;
-    function<void (int)> forAll= [this, &forAll, &found, &elem](int index) -> void {
+    function<void (int)> iterate= [this, &iterate, &found, &elem](int index) -> void {
         if (index >= listSize || found) {
             return;
         }
         found= elements.get()[index] == elem;
-        forAll(index + 1);
+        iterate(index + 1);
     };
-    forAll(0);
+    iterate(0);
     return found;
 }
 
 template <class T>
 void ArrayList<T>::each(const function<void (const T&)>& lambda) const {
-    function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
+    function<void (int)> iterate= [this, &iterate, &lambda](int index) -> void {
         if (index >= listSize) {
             return;
         }
         lambda(elements.get()[index]);
-        forAll(index + 1);
+        iterate(index + 1);
     };
-    forAll(0);
+    iterate(0);
 }
 
 template <class T>
 void ArrayList<T>::each(const function<void (T&)>& lambda) {
-    function<void (int)> forAll= [this, &forAll, &lambda](int index) -> void {
+    function<void (int)> iterate= [this, &iterate, &lambda](int index) -> void {
         if (index >= listSize) {
             return;
         }
         lambda(elements.get()[index]);
-        forAll(index + 1);
+        iterate(index + 1);
     };
-    forAll(0);
+    iterate(0);
+}
+
+template <class T>
+bool ArrayList<T>::exists(const function<bool (const T&)>& lambda) const {
+    bool doesExist= false;
+
+    for(int i= 0; !doesExist && i < listSize; i++) {
+        doesExist= doesExist || lambda(elements.get()[i]);
+    }
+
+    return doesExist;
+}
+
+template <class T>
+bool ArrayList<T>::forAll(const function<bool (const T&)>& lambda) const {
+    bool allTrue= true;
+
+    for(int i= 0; allTrue && i < listSize; i++) {
+        allTrue= allTrue && lambda(elements.get()[i]);
+    }
+
+    return allTrue;
 }
 
 template <class T>
 bool ArrayList<T>::remove(const T& elem) {
     int elemIndex= -1;
-    function<void (int)> forAll= [this, &forAll, &elemIndex, &elem](int index) -> void {
+    function<void (int)> iterate= [this, &iterate, &elemIndex, &elem](int index) -> void {
         if (index >= listSize) {
             return;
         }
@@ -250,9 +274,9 @@ bool ArrayList<T>::remove(const T& elem) {
             elemIndex= index;
             return;
         }
-        forAll(index + 1);
+        iterate(index + 1);
     };
-    forAll(0);
+    iterate(0);
     if (elemIndex == -1) {
         return false;
     }

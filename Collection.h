@@ -68,6 +68,18 @@ public:
      */
     virtual bool contains(const T& elem) const= 0;
     /**
+     * Checks if at least one element satisfies the predicate.  Evaluates p(a0) || p(a1) || ... || p(an)
+     * @param   predicate   Lambda that maps T -> bool
+     * @return  True if at least one element satisfies the predicate
+     */
+    virtual bool exists(const function<bool (const T&)>& predicate) const= 0;
+    /**
+     * Checks if all elements satisfies the predicate.  Evaluates p(a0) && p(a1) && ... && p(an)
+     * @param   predicate   Lambda that maps T -> bool
+     * @return  True if all elements satisfy the predicate
+     */
+    virtual bool forAll(const function<bool (const T&)>& predicate) const= 0;
+    /**
      * Creates a string representation of the collection
      * @return  String representation of the collection
      */

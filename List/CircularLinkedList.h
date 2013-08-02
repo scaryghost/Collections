@@ -62,6 +62,8 @@ public:
     virtual bool contains(const T& elem) const;
     virtual void each(const function<void (const T&)>& lambda) const;
     virtual void each(const function<void (T&)>& lambda);
+    virtual bool exists(const function<bool (const T&)>& lambda) const;
+    virtual bool forAll(const function<bool (const T&)>& lambda) const;
 
     virtual bool remove(const T& elem); 
     virtual void add(const T& elem);
@@ -209,6 +211,38 @@ void CircularLinkedList<T>::each(const function<void (T&)>& lambda) {
             ptr= ptr->next;
         } while(ptr != tail->next);
     }
+}
+
+template <class T>
+bool CircularLinkedList<T>::exists(const function<bool (const T&)>& lambda) const {
+    if (this->isEmpty()) {
+        return false;
+    }
+
+    bool doesExist= false;
+    shared_ptr<Node<T>> ptr(tail->next);
+
+    do {
+        doesExist= doesExist || lambda(ptr->value);
+        ptr= ptr->next;
+    } while(ptr != tail->next && !doesExist);
+    return doesExist;
+}
+
+template <class T>
+bool CircularLinkedList<T>::forAll(const function<bool (const T&)>& lambda) const {
+    if (this->isEmpty()) {
+        return false;
+    }
+
+    bool allTrue= true;
+    shared_ptr<Node<T>> ptr(tail->next);
+
+    do {
+        allTrue= allTrue && lambda(ptr->value);
+        ptr= ptr->next;
+    } while(ptr != tail->next && allTrue);
+    return allTrue;
 }
 
 template <class T>
