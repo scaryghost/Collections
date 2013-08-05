@@ -85,6 +85,14 @@ public:
      */
     virtual string toString() const;
     /**
+     * Transforms the collection from T collection -> U collection.  Evaluates [f(a0), f(a2), ..., f(an)].  The caller is 
+     * responsible for deallocating the memory.
+     * @param   transform   Lambda that maps T -> U
+     * @return  Pointer to a C style array of the transformed values
+     */
+    template <class U>
+    U* map(const function<Collection<U>* ()>& creator, const function<U (const T&)>& transform) const;
+    /**
      * Applies the lambda to each element in the collection.  This version does not allow you to modify the elements.
      * @param   lambda      Lambda function to evaluate each element with
      */
@@ -138,6 +146,18 @@ string Collection<T>::toString() const {
     });
     str << "]";
     return str.str();
+}
+
+template <class T> template <class U>
+U* Collection<T>::map(const function<U (const T&)>& transform) const {
+    int index= 0, collectionSize= this->size();
+    U* converted= new U[collectionSize];
+
+    each([&converted, &index, &collectionSize](const T& elem) -> void {
+        converted[index]= transform(elem);
+        index++;
+    });
+    return converted;
 }
 
 }   //namespace collections
