@@ -91,7 +91,7 @@ public:
      * @return  Pointer to a C style array of the transformed values
      */
     template <class U>
-    U* map(const function<Collection<U>* ()>& creator, const function<U (const T&)>& transform) const;
+    Collection<U>* map(const function<U (const T&)>& transform) const;
     /**
      * Applies the lambda to each element in the collection.  This version does not allow you to modify the elements.
      * @param   lambda      Lambda function to evaluate each element with
@@ -125,6 +125,10 @@ public:
      */
     virtual void resize(int newSize)= 0;
 
+protected:
+    template <class U>
+    Collection<U>* (*creator)(void);
+
 };  //class Collections
 
 template <class T>
@@ -149,13 +153,11 @@ string Collection<T>::toString() const {
 }
 
 template <class T> template <class U>
-U* Collection<T>::map(const function<U (const T&)>& transform) const {
-    int index= 0, collectionSize= this->size();
-    U* converted= new U[collectionSize];
+Collection<U>* Collection<T>::map(const function<U (const T&)>& transform) const {
+    Collection<U>* converted= creator();
 
-    each([&converted, &index, &collectionSize](const T& elem) -> void {
-        converted[index]= transform(elem);
-        index++;
+    each([&converted](const T& elem) -> void {
+        converted->add(transform(elem));
     });
     return converted;
 }
