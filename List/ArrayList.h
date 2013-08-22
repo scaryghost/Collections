@@ -33,6 +33,10 @@ public:
      */
     ArrayList();
     /**
+     * Copy constructor
+     */
+    ArrayList(const ArrayList<T>& list);
+    /**
      * Constructs an ArrayList containing the elements in the initialier list.  This constructor provides a quick way to 
      * create an ArrayList with the elements already known
      * @param   elements    Initial values for the list
@@ -108,6 +112,17 @@ ArrayList<T>::ArrayList() : ArrayList(0) {
 }
 
 template <class T>
+ArrayList<T>::ArrayList(const ArrayList<T>& list) : ArrayList(list.listCapacity) {
+    for(int i= 0; i < listSize; i++) {
+        elements.get()[i]= list.elements.get()[i];
+    }
+    listSize= list.listSize;
+    if (list.defaultValue != NULL) {
+        defaultValue.reset(new T(*(list.defaultValue)));
+    }
+}
+
+template <class T>
 ArrayList<T>::ArrayList(initializer_list<T> elements) : ArrayList(elements.size()) {
     int offset(0);
 
@@ -146,16 +161,7 @@ ArrayList<T>::~ArrayList() {
 
 template <class T>
 ArrayList<T>* ArrayList<T>::clone() const {
-    ArrayList<T> *copy= new ArrayList<T>(listCapacity);
-    for(int i= 0; i < listSize; i++) {
-        (copy->elements).get()[i]= elements.get()[i];
-    }
-    copy->listSize= listSize;
-    if (defaultValue != NULL) {
-        copy->defaultValue.reset(new T(*defaultValue));
-    }
-
-    return copy;
+    return new ArrayList<T>(*this);
 }
 
 template <class T>

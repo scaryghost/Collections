@@ -32,6 +32,10 @@ public:
      */
     CircularLinkedList();
     /**
+     * Copy constructor
+     */
+    CircularLinkedList(const CircularLinkedList<T>& list);
+    /**
      * Creates an empty list, that will fill gaps with the default value during expansions
      * @param   defaultValue    Default value to fill gaps
      */
@@ -97,6 +101,17 @@ CircularLinkedList<T>::CircularLinkedList() : listSize(0) {
 }
 
 template <class T>
+CircularLinkedList<T>::CircularLinkedList(const CircularLinkedList<T>& list) {
+    listSize= 0;
+    list.each([this](const T& elem) -> void {
+        this->add(elem);
+    });
+    if (list.defaultValue != NULL) {
+        defaultValue.reset(new T(*(list.defaultValue)));
+    }
+}
+
+template <class T>
 CircularLinkedList<T>::CircularLinkedList(const T& defaultValue) : CircularLinkedList() {
     this->defaultValue.reset(new T(defaultValue));
 }
@@ -121,11 +136,7 @@ CircularLinkedList<T>::~CircularLinkedList() {
 
 template <class T>
 CircularLinkedList<T>* CircularLinkedList<T>::clone() const {
-    CircularLinkedList<T>* copy= new CircularLinkedList<T>();
-    each([&copy](const T& elem) -> void {
-        copy->add(elem);
-    });
-    return copy;
+    return new CircularLinkedList<T>(*this);
 }
 
 
