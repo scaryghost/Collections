@@ -472,8 +472,9 @@ int main(int argc, char **argv) {
             stream << elem.get();
             return stream.str();
         });
-        RESULT_HANDLER(dynamic_cast<ArrayList<string>*>(m) != NULL);
+        RESULT_HANDLER(dynamic_cast<ArrayList<string>*>(m) != NULL && m->equals({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}));
         cout << l->toString() << endl;
+        delete m;
     });
 
     for(UnitTest& test: unitTests) {
