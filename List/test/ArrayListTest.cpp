@@ -2,7 +2,9 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "Collection.h"
@@ -19,6 +21,8 @@ using std::invalid_argument;
 using std::ostream;
 using std::out_of_range;
 using std::shared_ptr;
+using std::stringstream;
+using std::string;
 using std::vector;
 
 class Integer {
@@ -457,6 +461,18 @@ int main(int argc, char **argv) {
         index++;
         cout << "Test " << index << ": For All 2= ";
         RESULT_HANDLER(!l->forAll([](const Integer& i) -> bool { cout << i << endl; return i.get() < -1; }));
+        cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new ArrayList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Map 1= ";
+        Collection<string> *m= l->map<string>([](const Integer& elem) -> string {
+            stringstream stream;
+            stream << elem.get();
+            return stream.str();
+        });
+        RESULT_HANDLER(dynamic_cast<ArrayList<string>*>(m) != NULL);
         cout << l->toString() << endl;
     });
 

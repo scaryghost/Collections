@@ -5,6 +5,9 @@
 #include <initializer_list>
 #include <sstream>
 #include <string>
+#include <typeinfo>
+
+#include "Dispatcher.h"
 
 namespace etsai {
 namespace collections {
@@ -124,11 +127,6 @@ public:
      * will be lost
      */
     virtual void resize(int newSize)= 0;
-
-protected:
-    template <class U>
-    Collection<U>* (*creator)(void);
-
 };  //class Collections
 
 template <class T>
@@ -154,9 +152,9 @@ string Collection<T>::toString() const {
 
 template <class T> template <class U>
 Collection<U>* Collection<T>::map(const function<U (const T&)>& transform) const {
-    Collection<U>* converted= creator();
+    Collection<U>* converted= Dispatcher::create<U>(typeid(*this));
 
-    each([&converted](const T& elem) -> void {
+    each([&converted, &transform](const T& elem) -> void {
         converted->add(transform(elem));
     });
     return converted;
