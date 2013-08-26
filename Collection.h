@@ -7,7 +7,7 @@
 #include <string>
 #include <typeinfo>
 
-#include "Dispatcher.h"
+#include "src/DispatcherImpl.h"
 
 namespace etsai {
 namespace collections {
@@ -152,11 +152,14 @@ string Collection<T>::toString() const {
 
 template <class T> template <class U>
 Collection<U>* Collection<T>::map(const function<U (const T&)>& transform) const {
-    Collection<U>* converted= Dispatcher::create<U>(typeid(*this));
+    Dispatcher<T,U> *dispatcher= new DispatcherImpl<T,U>();
+    Collection<U>* converted= dispatcher->create(this);
 
     each([&converted, &transform](const T& elem) -> void {
         converted->add(transform(elem));
     });
+    delete dispatcher;
+
     return converted;
 }
 

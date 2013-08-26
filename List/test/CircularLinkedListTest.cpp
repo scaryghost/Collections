@@ -2,6 +2,8 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <sstream>
+#include <string>
 #include <stdexcept>
 #include <vector>
 
@@ -19,6 +21,8 @@ using std::invalid_argument;
 using std::ostream;
 using std::out_of_range;
 using std::shared_ptr;
+using std::string;
+using std::stringstream;
 using std::vector;
 
 class Integer {
@@ -448,6 +452,20 @@ int main(int argc, char **argv) {
         cout << "Test " << index << ": For All 2= ";
         RESULT_HANDLER(!l->forAll([](const Integer& i) -> bool { cout << i << endl; return i.get() < -1; }));
         cout << l->toString() << endl;
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<List<Integer>> l(new CircularLinkedList<Integer>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        index++;
+        cout << "Test " << index << ": Map 1= ";
+        Collection<string> *m= l->map<string>([](const Integer& elem) -> string {
+            stringstream stream;
+            stream << "value: " << elem.get();
+            return stream.str();
+        });
+        RESULT_HANDLER(dynamic_cast<CircularLinkedList<string>*>(m) != NULL && m->equals({"value: 0", "value: 1", "value: 2", "value: 3", "value: 4", "value: 5", 
+            "value: 6", "value: 7", "value: 8", "value: 9"}));
+        cout << l->toString() << endl;
+        delete m;
     });
 
     for(UnitTest& test: unitTests) {

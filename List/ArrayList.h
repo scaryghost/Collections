@@ -363,7 +363,7 @@ void ArrayList<T>::add(int index, const T& elem) {
     } else if (index >= listCapacity) {
         resize((index + 1) * 1.5);
     }
-    if (index > listSize) {
+    if (index >= listSize) {
         if (defaultValue != NULL) {
             for(int i= listSize; i < index; i++) {
                 elements.get()[i]= *defaultValue;

@@ -3,14 +3,18 @@
 
 #include "Collection.h"
 
+#include <functional>
+#include <initializer_list>
 #include <sstream>
 #include <stdexcept>
 
 namespace etsai {
 namespace collections {
 
-using std::out_of_range;
+using std::function;
+using std::initializer_list;
 using std::invalid_argument;
+using std::out_of_range;
 using std::stringstream;
 
 /**
