@@ -16,12 +16,12 @@ using namespace list;
 template <class T, class U>
 class DispatcherImpl : public Dispatcher<T,U> {
 public:
-    virtual Collection<U>* create(const Collection<T>* list);
+    virtual Collection<U>* create(const Collection<T>* collection);
 };
 
 template <class T, class U>
-Collection<U>* DispatcherImpl<T,U>::create(const Collection<T>* list) {
-    type_index typeInfo(typeid(*list));
+Collection<U>* DispatcherImpl<T,U>::create(const Collection<T>* collection) {
+    type_index typeInfo(typeid(*collection));
     
     if (typeInfo == typeid(ArrayList<T>)) {
         return new ArrayList<U>();

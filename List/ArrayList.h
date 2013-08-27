@@ -22,7 +22,7 @@ using std::stringstream;
 using std::unique_ptr;
 
 /**
- * Implements the List interface with an array
+ * Implements the List abstract class with an array
  * @author etsai
  */
 template <class T>

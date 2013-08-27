@@ -18,7 +18,8 @@ using std::string;
 using std::stringstream;
 
 /**
- * Pure virtual class defining the properties of a collection
+ * Abstract class defining the properties of a collection.  The goal of this class is to provide a common base 
+ * for all classes that contain a collection of data types, simliar to the COllection interface in Java.
  * @author etsai
  */
 template <class T>
@@ -65,9 +66,11 @@ public:
      */
     virtual bool isEmpty() const= 0;
     /**
-     * Returns true if the collection contains the specific element
+     * Returns true if the collection contains the specific element.  This function is a equivalent to calling the exists 
+     * function with an equality lambda.
      * @param   elem    Element to search for
      * @return  True if element is in collection
+     * @see exists
      */
     virtual bool contains(const T& elem) const= 0;
     /**
@@ -88,8 +91,8 @@ public:
      */
     virtual string toString() const;
     /**
-     * Transforms the collection from T collection -> U collection.  Evaluates [f(a0), f(a2), ..., f(an)].  The caller is 
-     * responsible for deallocating the memory.
+     * Transforms the collection from T collection -> U collection.  Evaluates [f(a0), f(a1), ..., f(an)].  The caller is 
+     * responsible for deallocating the created collection.
      * @param   transform   Lambda that maps T -> U
      * @return  Pointer to a C style array of the transformed values
      */
@@ -106,7 +109,7 @@ public:
      */
     virtual void each(const function<void (T&)>& lambda)= 0;
     /**
-     * Removes the first occurance desired element from the collection.  The function returns true if the collection 
+     * Removes the first occurance of the desired element from the collection.  The function returns true if the collection 
      * was changed from the call
      * @param   elem    Element to remove
      * @return  True if collection changed

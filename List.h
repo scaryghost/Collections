@@ -18,8 +18,8 @@ using std::out_of_range;
 using std::stringstream;
 
 /**
- * A list is a collection where specific elements can be accessed via numerical indices.  This interface 
- * defines the functions that map the indices to the elements in the collection
+ * A list is a collection where specific elements can be accessed via numerical indices.  This 
+ * abstract class defines the functions that map the indices to the elements in the collection
  * @author etsai
  */
 template <class T>
@@ -32,7 +32,7 @@ public:
     virtual void add(const T& elem)= 0;
     /**
      * Insert an element at the specific position.  If the index is greater than the list size or capacity, 
-     * more space should be allocated to accommodate the index.
+     * more space will be allocated to accommodate the index.
      * @param   index   Index to insert the element at
      * @param   elem    Element to insert
      */
@@ -52,7 +52,7 @@ public:
     virtual bool equals(const Collection<T>* collection) const= 0;
     /**
      * Reverses the ordering of the list.  This version does not change the object, but instead returns a copy of the elements in reversed order.  
-     * It is the caller's responsiblity to free the allocated memory.
+     * It is the caller's responsiblity to deallocate the created list.
      * @return  Copy of the list, with reversed ordering
      */
     virtual List<T>* reverse() const= 0;
@@ -85,8 +85,8 @@ public:
      */
     virtual T get(int index) const throw(out_of_range)= 0;
     /**
-     * Creates a sublist starting from the start index to the end index.  It is the function caller's responsibility to free 
-     * the allocated memory.
+     * Creates a sublist starting from the start index to the end index.  It is the function caller's responsibility to  
+     * deallocate the created list
      * @param   startIndex  Index to start from
      * @param   endIndex    Index to end at
      * @return  Sublist of the List

@@ -21,7 +21,8 @@ using std::stringstream;
 using std::unique_ptr;
 
 /**
- * Implements the List interface with a circular linked list
+ * Implements the List abstract with a circular linked list.  For a circular linked list, the size will 
+ * always equal the capacity
  * @author etsai
  */
 template <class T>
@@ -72,7 +73,7 @@ public:
     virtual bool remove(const T& elem); 
     virtual void add(const T& elem);
     /**
-     * This function will delete all memory allocated for the list nodes, resetting the size back to 0
+     * This function will delete all memory allocated for the list nodes, resetting the size and capacity back to 0
      */
     virtual void clear();
     virtual CircularLinkedList<T>* reverse() const;
