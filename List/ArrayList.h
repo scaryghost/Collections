@@ -3,6 +3,7 @@
 
 #include "List.h"
 
+#include <algorithm>
 #include <functional>
 #include <initializer_list>
 #include <memory>
@@ -16,6 +17,9 @@ namespace list {
 using std::function;
 using std::initializer_list;
 using std::invalid_argument;
+using std::copy;
+using std::copy_backward;
+using std::fill;
 using std::out_of_range;
 using std::shared_ptr;
 using std::stringstream;
@@ -113,10 +117,8 @@ ArrayList<T>::ArrayList() : ArrayList(0) {
 
 template <class T>
 ArrayList<T>::ArrayList(const ArrayList<T>& list) : ArrayList(list.listCapacity) {
-    for(int i= 0; i < listSize; i++) {
-        elements.get()[i]= list.elements.get()[i];
-    }
     listSize= list.listSize;
+    copy(list.elements.get(), list.elements.get() + list.listSize, elements.get());
     if (list.defaultValue != NULL) {
         defaultValue.reset(new T(*(list.defaultValue)));
     }
@@ -148,9 +150,7 @@ ArrayList<T>::ArrayList(int initialCapacity) : listCapacity(initialCapacity), li
 template <class T>
 ArrayList<T>::ArrayList(int initialSize, const T& defaultValue) : ArrayList(initialSize) {
     this->defaultValue.reset(new T(defaultValue));
-    for(int i= 0; i < initialSize; i++) {
-        this->elements.get()[i]= defaultValue;
-    }
+    fill(elements.get(), elements.get() + initialSize, defaultValue);
 }
 
 template <class T>
@@ -308,15 +308,11 @@ void ArrayList<T>::resize(int newSize) {
         T *newList= new T[newSize];
         if (listCapacity > 0) {
             int maxLen= (offset < 0 ? newSize : listCapacity);
-            for(int i= 0; i < maxLen; i++) {
-                newList[i]= elements.get()[i];
-            }
+            copy(elements.get(), elements.get() + maxLen, newList);
         }
         if (offset > 0) {
             if (defaultValue != NULL) {
-                for(int i= 0; i < offset; i++) {
-                    newList[listCapacity + i]= *defaultValue;
-                }
+                fill(newList + listCapacity, newList + listCapacity + offset, *defaultValue);
             }
         } else {
             listSize= newSize;
@@ -365,18 +361,14 @@ void ArrayList<T>::add(int index, const T& elem) {
     }
     if (index >= listSize) {
         if (defaultValue != NULL) {
-            for(int i= listSize; i < index; i++) {
-                elements.get()[i]= *defaultValue;
-            }
+            fill(elements.get() + listSize, elements.get() + index, *defaultValue);
         }
         listSize= index + 1;
     } else {
         if (listSize + 1 > listCapacity) {
             resize(listCapacity * 1.5);
         }
-        for(int i= listSize + 1; i > index; i--) {
-            elements.get()[i]= elements.get()[i - 1];
-        }
+        copy_backward(elements.get() + index, elements.get() + listSize, elements.get() + listSize + 1);
         listSize++;
     }
     elements.get()[index]= elem;
@@ -393,9 +385,7 @@ T ArrayList<T>::minus(int index) throw(out_of_range) {
     this->rangeCheck(index, listSize);
     T elem= elements.get()[index];
     listSize--;
-    for(int i= index; i < listSize; i++) {
-        elements.get()[i]= elements.get()[i + 1];
-    }
+    copy(elements.get() + index + 1, elements.get() + listSize + 1, elements.get() + index);
     return elem;
 }
 
@@ -418,9 +408,7 @@ ArrayList<T>* ArrayList<T>::subList(int startIndex, int endIndex) const throw(ou
     }
         
     ArrayList<T>* newList= new ArrayList<T>(endIndex - startIndex + 1);
-    for(int i= 0; i < (endIndex - startIndex + 1); i++) {
-        newList->elements.get()[i]= elements.get()[startIndex + i];
-    }
+    copy(elements.get() + startIndex, elements.get() + endIndex + 1, newList->elements.get());
     newList->listSize= newList->listCapacity;
     return newList;
 }
