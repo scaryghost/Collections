@@ -108,6 +108,12 @@ public:
      */
     template <class U>
     U foldRight(const U& initialValue, const function<U (const T&, const U&)>& lambda) const;
+    /**
+     * Changes the capacity of the collection to the new size.  If new size > current size, then only the capacity will 
+     * be modified.  However, if new size < current size, then both capacity and size will shrink and be equal, and data 
+     * will be lost
+     */
+    virtual void resize(int newSize)= 0;
 
 protected:
     /**

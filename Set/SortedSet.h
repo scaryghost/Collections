@@ -37,7 +37,6 @@ public:
     virtual bool remove(const T& elem);
     virtual void add(const T& elem);
     virtual void clear();
-    virtual void resize(int newSize);
 
 private:
     ArrayList<T> elements;
@@ -160,7 +159,27 @@ void SortedSet<T>::clear() {
 }
 
 template <class T>
-void SortedSet<T>::resize(int newSize) {
+int SortedSet<T>::binarySearch(const T& elem) {
+    local int index, low, high, mid;
+
+    low= 0;
+    high= elements.size() - 1;
+    index= -1;
+    mid= -1;
+
+    while(low <= high) {
+        mid= (low+high)/2;
+        if (elements.get(mid) < elem) {
+            low= mid + 1;
+        } else if (elements.get(mid) > elem) {
+            high= mid - 1;
+        } else {
+            index= mid;
+            break;
+        }
+    }
+    insert= low;
+    return index;
 }
 
 }
