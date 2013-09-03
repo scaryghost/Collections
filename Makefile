@@ -5,7 +5,7 @@ all: ArrayListTest CircularLinkedListTest
 ArrayListTest: List/test/ArrayListTest.cpp List/ArrayList.h
 	g++ $(CPP_FLAGS) -o $@ $<
 
-CircularLinkedList: List/test/CircularLinkedList.cpp List/CircularLinkedList.h
+CircularLinkedListTest: List/test/CircularLinkedListTest.cpp List/CircularLinkedList.h
 	g++ $(CPP_FLAGS) -o $@ $<
 
 clean:

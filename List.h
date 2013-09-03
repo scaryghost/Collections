@@ -29,14 +29,15 @@ public:
      * Pure virtual destructor
      */
     virtual ~List()= 0;
-    virtual void add(const T& elem)= 0;
+    virtual bool add(const T& elem)= 0;
     /**
      * Insert an element at the specific position.  If the index is greater than the list size or capacity, 
      * more space will be allocated to accommodate the index.
      * @param   index   Index to insert the element at
      * @param   elem    Element to insert
+     * @return  True if the collection was modified from the call
      */
-    virtual void add(int index, const T& elem)= 0;
+    virtual bool add(int index, const T& elem)= 0;
     /**
      * Checks if both collections have the same elements in the same order.  This version takes in an 
      * initializer list, providing a convenient way to quickly construct a collection.

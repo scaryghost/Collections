@@ -71,7 +71,7 @@ public:
     virtual bool forAll(const function<bool (const T&)>& lambda) const;
 
     virtual bool remove(const T& elem); 
-    virtual void add(const T& elem);
+    virtual bool add(const T& elem);
     /**
      * This function will delete all memory allocated for the list nodes, resetting the size and capacity back to 0
      */
@@ -79,7 +79,7 @@ public:
     virtual CircularLinkedList<T>* reverse() const;
     virtual CircularLinkedList<T>* reverse(bool mutate);
     virtual void resize(int newSize);
-    virtual void add(int index, const T& elem);
+    virtual bool add(int index, const T& elem);
     virtual void set(int index, const T& elem) throw(out_of_range);
     virtual T minus(int index) throw(out_of_range);
     virtual T get(int index) const throw(out_of_range);
@@ -281,19 +281,26 @@ bool CircularLinkedList<T>::remove(const T& elem) {
 }
 
 template <class T>
-void CircularLinkedList<T>::add(const T& elem) {
-    shared_ptr<Node<T>> ptr(new Node<T>());
-    ptr->value= elem;
+bool CircularLinkedList<T>::add(const T& elem) {
+    bool modified= true;
 
-    if (tail == NULL) {
-        tail= ptr;
-        tail->next= tail;
-    } else {
-        ptr->next= tail->next;
-        tail->next= ptr;
-        tail= ptr;
+    try {
+        shared_ptr<Node<T>> ptr(new Node<T>());
+        ptr->value= elem;
+
+        if (tail == NULL) {
+            tail= ptr;
+            tail->next= tail;
+        } else {
+            ptr->next= tail->next;
+            tail->next= ptr;
+            tail= ptr;
+        }
+        listSize++;
+    } catch (bad_alloc& ex) {
+        modified= false;
     }
-    listSize++;
+    return modified;
 }
 
 template <class T>
@@ -373,28 +380,68 @@ void CircularLinkedList<T>::resize(int newSize) {
 
 
 template <class T>
-void CircularLinkedList<T>::add(int index, const T& elem) {
+bool CircularLinkedList<T>::add(int index, const T& elem) {
+    bool modified= true;
+
     if (index >= listSize) {
         T filler;
 
         if (defaultValue != NULL) {
             filler= *defaultValue;
         }
-        for(int i= listSize; i < index; i++) {
-            add(filler);
-        }
-        add(elem);
-    } else {
-        shared_ptr<Node<T>> ptr(tail->next), prev(tail);
+        shared_ptr<Node<T>> fillerNodes= NULL, it;
+        try {
+            for(int i= listSize; i < index; i++) {
+                shared_ptr<Node<T>> node(new Node<T>());
 
-        for(int i= 0; i < index; i++,prev=ptr,ptr= ptr->next);
+                node->value= filler;
+                if (fillerNodes == NULL) {
+                    fillerNodes= node;
+                } else {
+                    it->next= node;
+                }
+                it= node;
+            }
+            shared_ptr<Node<T>> end(new Node<T>());
+            end->value= elem;
+            if (fillerNodes == NULL) {
+                fillerNodes= end;
+            } else {
+                it->next= end;
+            }
+            if (tail == NULL) {
+                end->next= fillerNodes;
+                tail= end;
+            } else {
+                end->next= tail->next;
+                tail->next= fillerNodes;
+                tail= end;
+            }
+            listSize= index + 1;
+        } catch (bad_alloc& ex) {
+            modified= false;
+            it= fillerNodes;
+            while(it != NULL) {
+                it= it->next;
+                fillerNodes= it;
+            }
+        }
+    } else {
+        try {
+            shared_ptr<Node<T>> ptr(tail->next), prev(tail);
+
+            for(int i= 0; i < index; i++,prev=ptr,ptr= ptr->next);
     
-        shared_ptr<Node<T>> newNode(new Node<T>());
-        newNode->value= elem;
-        newNode->next= ptr;
-        prev->next= newNode;
-        listSize++;
+            shared_ptr<Node<T>> newNode(new Node<T>());
+            newNode->value= elem;
+            newNode->next= ptr;
+            prev->next= newNode;
+            listSize++;
+        } catch (bad_alloc& ex) {
+            modified= false;
+        }
     }
+    return modified;
 }
 
 template <class T>

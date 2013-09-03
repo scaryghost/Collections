@@ -7,6 +7,7 @@
 #include <functional>
 #include <initializer_list>
 #include <memory>
+#include <new>
 #include <sstream>
 #include <string.h>
 
@@ -14,16 +15,7 @@ namespace etsai {
 namespace collections {
 namespace list {
 
-using std::function;
-using std::initializer_list;
-using std::invalid_argument;
-using std::copy;
-using std::copy_backward;
-using std::fill;
-using std::out_of_range;
-using std::shared_ptr;
-using std::stringstream;
-using std::unique_ptr;
+using namespace std;
 
 /**
  * Implements the List abstract class with an array
@@ -85,7 +77,7 @@ public:
     virtual bool forAll(const function<bool (const T&)>& lambda) const;
 
     virtual bool remove(const T& elem); 
-    virtual void add(const T& elem);
+    virtual bool add(const T& elem);
     /**
      * This function will reset the size back to 0, but will not change the capacity
      */
@@ -93,7 +85,7 @@ public:
     virtual ArrayList<T>* reverse() const;
     virtual ArrayList<T>* reverse(bool mutate);
     virtual void resize(int newSize);
-    virtual void add(int index, const T& elem);
+    virtual bool add(int index, const T& elem);
     virtual void set(int index, const T& elem) throw(out_of_range);
     virtual T minus(int index) throw(out_of_range);
     virtual T get(int index) const throw(out_of_range);
@@ -291,8 +283,8 @@ bool ArrayList<T>::remove(const T& elem) {
 }
 
 template <class T>
-void ArrayList<T>::add(const T& elem) {
-    add(listSize, elem);
+bool ArrayList<T>::add(const T& elem) {
+    return add(listSize, elem);
 }
 
 template <class T>
@@ -353,25 +345,32 @@ ArrayList<T>* ArrayList<T>::reverse(bool mutate) {
 }
 
 template <class T>
-void ArrayList<T>::add(int index, const T& elem) {
-    if (elements == NULL) {
-        resize(8);
-    } else if (index >= listCapacity) {
-        resize((index + 1) * 1.5);
-    }
-    if (index >= listSize) {
-        if (defaultValue != NULL) {
-            fill(elements.get() + listSize, elements.get() + index, *defaultValue);
+bool ArrayList<T>::add(int index, const T& elem) {
+    bool status= true;
+
+    try {
+        if (elements == NULL) {
+            resize(8);
+        } else if (index >= listCapacity) {
+            resize((index + 1) * 1.5);
         }
-        listSize= index + 1;
-    } else {
-        if (listSize + 1 > listCapacity) {
-            resize(listCapacity * 1.5);
+        if (index >= listSize) {
+            if (defaultValue != NULL) {
+                fill(elements.get() + listSize, elements.get() + index, *defaultValue);
+            }
+            listSize= index + 1;
+        } else {
+            if (listSize + 1 > listCapacity) {
+                resize(listCapacity * 1.5);
+            }
+            copy_backward(elements.get() + index, elements.get() + listSize, elements.get() + listSize + 1);
+            listSize++;
         }
-        copy_backward(elements.get() + index, elements.get() + listSize, elements.get() + listSize + 1);
-        listSize++;
+        elements.get()[index]= elem;
+    } catch (std::bad_alloc& ex) {
+        status= false;
     }
-    elements.get()[index]= elem;
+    return status;
 }
 
 template <class T>

@@ -116,10 +116,11 @@ public:
      */
     virtual bool remove(const T& elem)= 0;
     /**
-     * Adds the element to the collection
+     * Adds the element to the collection.  If the collection was modified from the operation
      * @param   elem    Element to add
+     * @return  True if the collection was modified
      */
-    virtual void add(const T& elem)= 0;
+    virtual bool add(const T& elem)= 0;
     /**
      * Removes all elements in the collection
      */
