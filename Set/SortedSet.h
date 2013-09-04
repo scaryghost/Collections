@@ -35,12 +35,11 @@ public:
     virtual void each(const function<void (const T&)>& lambda) const;
     virtual void each(const function<void (T&)>& lambda);
     virtual bool remove(const T& elem);
-    virtual void add(const T& elem);
+    virtual bool add(const T& elem);
     virtual void clear();
 
 private:
     ArrayList<T> elements;
-    void inOrderInsert(const T& elem);
     int binarySearch(const T& elem);
 };
 
@@ -56,7 +55,7 @@ SortedSet<T>::SortedSet(const SortedSet<T> &set) {
 template <class T>
 SortedSet<T>::SortedSet(const initializer_list<T> &elements) {
     for(auto &elem: elements) {
-        inOrderInsert(elem);
+        add(elem);
     }
 }
 
@@ -71,11 +70,16 @@ SortedSet* SortedSet<T>::clone() const {
 
 template <class T>
 bool SortedSet<T>::equals(initializer_list<T> collection) const {
-    
+    SortedSet<T> copy(collection);
+
+    return equals(&copy);
 }
 
 template <class T>
 bool SortedSet<T>::equals(const Collection<T>* collection) const {
+    return collection->exists([](const T& elem) -> bool {
+        contains(elem);
+    });
 }
 
 template <class T>
@@ -150,7 +154,12 @@ bool SortedSet<T>::remove(const T& elem) {
 template <class T>
 void SortedSet<T>::add(const T& elem) {
     int index= binarySearch(elem);
+
+    if (index < elements.size() && elements.get(index) == elem) {
+        return false;
+    }
     elements.add(index, elem);
+    return true;
 }
 
 template <class T>
