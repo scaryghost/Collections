@@ -41,7 +41,7 @@ public:
 private:
     ArrayList<T> elements;
     int binarySearch(const T& elem);
-};
+};  //class SortedSet
 
 template <class T>
 SortedSet<T>::SortedSet() {
@@ -49,13 +49,15 @@ SortedSet<T>::SortedSet() {
 
 template <class T>
 SortedSet<T>::SortedSet(const SortedSet<T> &set) {
-    this->elements= set.elements;
+    set.elements.each([this](const T& elem) -> void {
+       this-> elements.add(elem);
+    });
 }
 
 template <class T>
 SortedSet<T>::SortedSet(const initializer_list<T> &elements) {
     for(auto &elem: elements) {
-        add(elem);
+        this->add(elem);
     }
 }
 
@@ -64,7 +66,7 @@ SortedSet<T>::~SortedSet() {
 }
 
 template <class T>
-SortedSet* SortedSet<T>::clone() const {
+SortedSet<T>* SortedSet<T>::clone() const {
     return new SortedSet<T>(*this);
 }
 
@@ -77,8 +79,8 @@ bool SortedSet<T>::equals(initializer_list<T> collection) const {
 
 template <class T>
 bool SortedSet<T>::equals(const Collection<T>* collection) const {
-    return collection->exists([](const T& elem) -> bool {
-        contains(elem);
+    return collection->exists([this](const T& elem) -> bool {
+        this->contains(elem);
     });
 }
 
@@ -152,7 +154,7 @@ bool SortedSet<T>::remove(const T& elem) {
 }
 
 template <class T>
-void SortedSet<T>::add(const T& elem) {
+bool SortedSet<T>::add(const T& elem) {
     int index= binarySearch(elem);
 
     if (index < elements.size() && elements.get(index) == elem) {
@@ -169,11 +171,11 @@ void SortedSet<T>::clear() {
 
 template <class T>
 int SortedSet<T>::binarySearch(const T& elem) {
-    local int index, low, high, mid;
+    int index, low, high, mid;
 
     low= 0;
     high= elements.size() - 1;
-    index= -1;
+    index= 0;
     mid= -1;
 
     while(low <= high) {
@@ -187,12 +189,11 @@ int SortedSet<T>::binarySearch(const T& elem) {
             break;
         }
     }
-    insert= low;
     return index;
 }
 
-}
-}
-}
+}   //namespace set
+}   //namespace collections
+}   //namespace etsai
 
 #endif
