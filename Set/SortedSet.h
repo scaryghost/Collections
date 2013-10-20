@@ -40,7 +40,8 @@ public:
 
 private:
     ArrayList<T> elements;
-    int binarySearch(const T& elem);
+    int binarySearch(const T& elem) const;
+    inline bool equals(const T& left, const T& right) const;
 };  //class SortedSet
 
 template <class T>
@@ -101,25 +102,8 @@ bool SortedSet<T>::isEmpty() const {
 
 template <class T>
 bool SortedSet<T>::contains(const T& elem) const {
-    int low= 0, high= elements.size() - 1;
-    
-    if (low == high) {
-        return elements.get(0) == elem;
-    }
-
-    int index= (low + high) / 2;
-    bool found= false;
-    while(!found && low <= high) {
-        if (elements.get(index) < elem) {
-            low= index + 1;
-        } else if (elements.get(index) > elem) {
-            high= index - 1;
-        } else {
-            found= true;
-        }
-        index= (low + high) / 2;
-    }
-    return found;
+    int index= binarySearch(elem);
+    return index < elements.size() && equals(elements.get(index), elem);
 }
 
 template <class T>
@@ -146,7 +130,7 @@ template <class T>
 bool SortedSet<T>::remove(const T& elem) {
     int index= binarySearch(elem);
 
-    if (elements.get(index) == elem) {
+    if (index < elements.size() && equals(elements.get(index), elem)) {
         elements.remove(index);
         return true;
     }
@@ -157,7 +141,7 @@ template <class T>
 bool SortedSet<T>::add(const T& elem) {
     int index= binarySearch(elem);
 
-    if (index < elements.size() && elements.get(index) == elem) {
+    if (index < elements.size() && equals(elements.get(index), elem)) {
         return false;
     }
     elements.add(index, elem);
@@ -170,7 +154,7 @@ void SortedSet<T>::clear() {
 }
 
 template <class T>
-int SortedSet<T>::binarySearch(const T& elem) {
+int SortedSet<T>::binarySearch(const T& elem) const {
     int index, low, high, mid;
 
     low= 0;
@@ -182,7 +166,7 @@ int SortedSet<T>::binarySearch(const T& elem) {
         mid= (low+high)/2;
         if (elements.get(mid) < elem) {
             low= mid + 1;
-        } else if (elements.get(mid) > elem) {
+        } else if (elem < elements.get(mid)) {
             high= mid - 1;
         } else {
             index= mid;
@@ -190,6 +174,11 @@ int SortedSet<T>::binarySearch(const T& elem) {
         }
     }
     return index;
+}
+
+template <class T>
+bool SortedSet<T>::equals(const T& left, const T& right) const {
+    return !(left < right) && !(right < left);
 }
 
 }   //namespace set
