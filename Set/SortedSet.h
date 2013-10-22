@@ -155,12 +155,11 @@ void SortedSet<T>::clear() {
 
 template <class T>
 int SortedSet<T>::binarySearch(const T& elem) const {
-    int index, low, high, mid;
+    int low, high, mid;
 
     low= 0;
     high= elements.size() - 1;
-    index= 0;
-    mid= -1;
+    mid= 0;
 
     while(low <= high) {
         mid= (low+high)/2;
@@ -169,11 +168,10 @@ int SortedSet<T>::binarySearch(const T& elem) const {
         } else if (elem < elements.get(mid)) {
             high= mid - 1;
         } else {
-            index= mid;
-            break;
+            return mid;
         }
     }
-    return index;
+    return low;
 }
 
 template <class T>
