@@ -88,6 +88,60 @@ int main(int argc, char **argv) {
         cout << "Test " << index << ": Contains Test 6= ";
         RESULT_HANDLER(s->contains(9));
     });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Duplicates 1= ";
+        RESULT_HANDLER(!s->add(0));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Duplicates 2= ";
+        RESULT_HANDLER(!s->add(9));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Duplicates 3= ";
+        RESULT_HANDLER(!s->add(5));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Add 1= ";
+        RESULT_HANDLER(s->add(-1) && s->equals({5, 4, 3, 7, 0, 1, 9, 2, 6, 8, -1}));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Add 2= ";
+        RESULT_HANDLER(s->add(10) && s->equals({5, 4, 3, 7, 0, 1, 9, 2, 6, 8, 10}));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Add 3= ";
+        RESULT_HANDLER(s->add(5) && s->equals({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Remove 1= ";
+        RESULT_HANDLER(s->remove(0) && s->equals({5, 4, 3, 7, 1, 9, 2, 6, 8}));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Remove 2= ";
+        RESULT_HANDLER(s->remove(9) && s->equals({5, 4, 3, 7, 0, 1, 2, 6, 8}));
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Remove 3= ";
+        RESULT_HANDLER(s->remove(5) && s->equals({4, 3, 7, 0, 1, 9, 2, 6, 8}));
+    });
     for(UnitTest& test: unitTests) {
         test();
     }
