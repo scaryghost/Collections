@@ -142,6 +142,48 @@ int main(int argc, char **argv) {
         cout << "Test " << index << ": Remove 3= ";
         RESULT_HANDLER(s->remove(5) && s->equals({4, 3, 7, 0, 1, 9, 2, 6, 8}));
     });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Clear= ";
+        s->clear();
+        RESULT_HANDLER(s->isEmpty());
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Size 1= ";
+        s->clear();
+        RESULT_HANDLER(s->size() == 10);
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Size 2= ";
+        s->remove(11);
+        RESULT_HANDLER(s->size() == 10);
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Size 3= ";
+        s->add(9);
+        RESULT_HANDLER(s->size() == 10);
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Size 4= ";
+        s->remove(5);
+        RESULT_HANDLER(s->size() == 9);
+    });
+    unitTests.push_back([&pass, &fail, &index]() -> void {
+        shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
+        index++;
+        cout << "Test " << index << ": Size 5= ";
+        s->add(10);
+        RESULT_HANDLER(s->size() == 11);
+    });
     for(UnitTest& test: unitTests) {
         test();
     }
