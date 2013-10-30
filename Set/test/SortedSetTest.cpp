@@ -153,7 +153,6 @@ int main(int argc, char **argv) {
         shared_ptr<Set<int>> s(new SortedSet<int>({5, 4, 3, 7, 0, 1, 9, 2, 6, 8}));
         index++;
         cout << "Test " << index << ": Size 1= ";
-        s->clear();
         RESULT_HANDLER(s->size() == 10);
     });
     unitTests.push_back([&pass, &fail, &index]() -> void {
